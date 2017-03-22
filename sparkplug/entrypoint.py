@@ -1,0 +1,49 @@
+# -*- coding: utf8 -*-
+import re
+
+
+class EntryPoint(object):
+    """
+    Lightweight analogue for pkg_resources.EntryPoint
+    """
+    pattern = re.compile(r'\s*(?P<name>.+?)\s*=\s*(?P<module>[\w.]+)\s*(:\s*(?P<attr>[\w.]+))?\s*(?P<extras>\[.*\])?\s*$')
+    def __init__(self, name, module_name, attrs=(), distname=None):
+        self.name = name
+        self.module_name = module_name
+        self.attrs = attrs
+        self.distname = distname
+
+    @classmethod
+    def parse(cls, src, distname=None):
+        """
+        pasted from pkg_resources, fall back on their EntryPoints when extras are required
+        """
+        m = cls.pattern.match(src)
+        res = m.groupdict()
+        if res['extras']:
+            import pkg_resources as pr
+            dist = distname and pr.get_distribution(distname) or None
+            return pr.EntryPoint.parse(src, dist=dist)
+        attrs = res['attr'].split('.') if res['attr'] else ()
+        return cls(res['name'], res['module'], attrs, distname)
+
+    def load(self):
+        """
+        pasted from pkg_resources
+        """
+        import functools
+        from importlib import import_module
+        module = import_module(self.module_name)
+        try:
+            return functools.reduce(getattr, self.attrs, module)
+        except AttributeError as exc:
+            raise ImportError(str(exc))
+
+    def mkspec(item):
+        return '{i[0]} = {i[1]}'.format(i=item)
+
+    def get_group(self, group):
+        """
+        returns a list of entry points for the given group name
+        """
+        return [EntryPoint.parse(self.mkspec(i)) for i in self.cfgpars.items(group)]
