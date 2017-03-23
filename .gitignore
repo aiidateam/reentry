@@ -1,0 +1,16 @@
+*.pyc
+*~
+*.project
+*.pydevproject
+.settings
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+*/*/*/.DS_Store
+.metadata
+
+/venv*/
+/.idea/
+/*egg-info/
+*dist
+*data

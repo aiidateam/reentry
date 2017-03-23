@@ -39,11 +39,11 @@ class EntryPoint(object):
         except AttributeError as exc:
             raise ImportError(str(exc))
 
-    def mkspec(item):
-        return '{i[0]} = {i[1]}'.format(i=item)
+    def __str__(self):
+        s = '{} = {}'.format(self.name, self.module_name)
+        if self.attrs:
+            s += ':{}'.format('.'.join(self.attrs))
+        return s
 
-    def get_group(self, group):
-        """
-        returns a list of entry points for the given group name
-        """
-        return [EntryPoint.parse(self.mkspec(i)) for i in self.cfgpars.items(group)]
+    def __repr__(self):
+        return 'sparkplug.EntryPoint.parse({})'.format(str(self))

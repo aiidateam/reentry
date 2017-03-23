@@ -7,8 +7,7 @@ class BackendInterface(object):
     """
     Backend interface
     """
-    @abstractmethod
-    def get_map(self, dist=None, groups=None, name=None):
+    def get_map(self, dist=None, group=None, name=None):
         """
         get a map of entry points, filtered by
 
@@ -30,38 +29,39 @@ class BackendInterface(object):
             }
         """
 
-    @abstractmethod
-    def get_group(self, group):
+    def iter_group(self, group):
         """
         returns a list of entry points for the given group name
         """
 
-    @abstractmethod
     def get_group_names(self):
         """
         returns a list of group names
         """
 
-    @abstractmethod
     def get_dist_names(self):
         """
         returns a list of distribution names
         """
 
-    @abstractmethod
-    def get_dist(self, dist):
+    def get_dist_map(self, dist):
         """
         returns a map {group:[entry_points, ...], ...} for the given dist name
         """
 
-    @abstractmethod
     def write_dist(self, dist):
         """
         add a distribution, empty by default
         """
 
-    @abstractmethod
     def rm_dist(self, distname):
         """
         removes a distribution completely
         """
+
+    def pr_dist_map(self, distname):
+        from pkg_resources import get_distribution
+        dist = get_distribution(distname)
+        dname = dist.project_name
+        epmap = dist.get_entry_map()
+        return dname, epmap
