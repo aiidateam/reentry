@@ -31,16 +31,40 @@ class JsonBackend(BackendInterface):
         with open(self.datafile, 'w') as fp:
             json.dump(self.epmap, fp)
 
-    def write_dist(self, dist):
+    def write_pr_dist(self, dist):
         """
         add a distribution, empty by default
         """
         dname, epmap = self.pr_dist_map(dist)
+        self._write_dist(dname, epmap)
+
+    def _write_dist(self, distname, epmap):
+        dname = distname
         if not self.epmap.get(dname):
             self.epmap[dname] = {}
+        '''extract entry points that are clearly not for plugins'''
+        epmap.pop('console_scripts', None)
+        epmap.pop('gui_scripts', None)
+        epmap.pop('distutils.commands', None)
+        epmap.pop('distutils.setup_keywords', None)
+        epmap.pop('setuptools.installation', None)
+        epmap.pop('setuptools.file_finders', None)
+        epmap.pop('egg_info.writers', None)
         epmap = {k: {kk: str(vv) for kk, vv in v.iteritems()} for k, v in epmap.iteritems()}
+        '''update entry point storage'''
         self.epmap[dname].update(epmap)
         self.write()
+
+    def write_st_dist(self, dist):
+        """
+        add a distribution during it's install
+        """
+        dname = dist.get_name()
+        epmap = dist.entry_points.copy()
+        for group in epmap:
+            elist = epmap[group]
+            epmap[group] = {i.split(' = ', 1)[0]: i for i in elist}
+        self._write_dist(dname, epmap)
 
     def iter_group(self, group):
         """
@@ -50,6 +74,10 @@ class JsonBackend(BackendInterface):
         for dist in self.epmap:
             for en, ep in self.epmap[dist].get(group, {}).iteritems():
                 yield EntryPoint.parse(ep)
+
+
+    def get_pr_dist_map(self, dist):
+        return self.get_dist_map(dist.project_name)
 
     def get_dist_map(self, distname):
         """

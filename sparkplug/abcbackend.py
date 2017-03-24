@@ -49,19 +49,35 @@ class BackendInterface(object):
         returns a map {group:[entry_points, ...], ...} for the given dist name
         """
 
-    def write_dist(self, dist):
+
+    def write_pr_dist(self, dist):
         """
         add a distribution, empty by default
         """
+
+    def write_st_dist(self, dist):
+        """
+        add a distribution during it's installation
+        """
+
+    def write_dist(self, distname):
+        """
+        take a distribution's project name, add the distribution
+        """
+        dist = self.pr_dist_from_name(distname)
+        self.write_pr_dist(dist)
 
     def rm_dist(self, distname):
         """
         removes a distribution completely
         """
 
-    def pr_dist_map(self, distname):
-        from pkg_resources import get_distribution
-        dist = get_distribution(distname)
+    def pr_dist_map(self, dist):
         dname = dist.project_name
         epmap = dist.get_entry_map()
         return dname, epmap
+
+    def pr_dist_from_name(self, distname):
+        from pkg_resources import get_distribution
+        dist = get_distribution(distname)
+        return dist
