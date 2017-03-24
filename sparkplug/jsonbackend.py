@@ -144,6 +144,21 @@ class JsonBackend(BackendInterface):
             self.epmap.pop(distname)
         self.write()
 
+    def rm_group(self, group):
+        """
+        removes a group from all dists
+        """
+        for dist in self.epmap:
+            self.epmap[dist].pop(group)
+        self.write()
+
+    def clear(self):
+        """
+        completely clear entry_point storage
+        """
+        self.epmap = {}
+        self.write()
+
     def get_map(self, dist=None, group=None, name=None):
         """
         see BackendInterface docs

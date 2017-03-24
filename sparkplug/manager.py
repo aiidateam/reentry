@@ -38,35 +38,28 @@ def register(distname):
     bkend.write_dist(distname)
 
 
-def register_all(groups=[]):
+def scan(groups=[]):
     """
     walks through all distributions available and registers entry points or only those in `groups`
     """
     import pkgutil
     import sys
     import pkg_resources as pr
-    from mdebug.mdebug import mdebug
-    DBG = mdebug()
     pr_env = pr.AvailableDistributions()
     pr_env.scan()
-    # ~ modules = (i[1] for i in pkgutil.iter_modules() if i[2] and i[1].find('.') < 0)
-    # ~ modules = [mod for mod in modules if mod not in sys.builtin_module_names]
-    # ~ modules = [mod for mod in modules if not mod.startswith('_')]
+    if groups:
+        for g in groups:
+            bkend.rm_group(g)
+    else:
+        bkend.clear()
+
     for dists in pr_env._distmap.values():
         dist = dists[0]
-        DBG(dist)
-        # ~ try:
-            # ~ DBG(mod)
-            # ~ dist = DBG(pr.get_distribution(mod))
-        # ~ except pr.DistributionNotFound as e:
-            # ~ DBG(e)
-            # ~ continue
-        emap = DBG(dist.get_entry_map())
+        emap = dist.get_entry_map()
         if groups:
             emap = {k: v for k, v in emap.iteritems() if k in groups}
         dname = dist.project_name
-        bkend._write_dist(DBG(dname), DBG(emap))
-        print('---')
+        bkend._write_dist(dname, emap)
 
 
 def unregister(distname):
