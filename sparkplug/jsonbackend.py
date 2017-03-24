@@ -40,8 +40,6 @@ class JsonBackend(BackendInterface):
 
     def _write_dist(self, distname, epmap):
         dname = distname
-        if not self.epmap.get(dname):
-            self.epmap[dname] = {}
         '''extract entry points that are clearly not for plugins'''
         epmap.pop('console_scripts', None)
         epmap.pop('gui_scripts', None)
@@ -51,9 +49,13 @@ class JsonBackend(BackendInterface):
         epmap.pop('setuptools.file_finders', None)
         epmap.pop('egg_info.writers', None)
         epmap = {k: {kk: str(vv) for kk, vv in v.iteritems()} for k, v in epmap.iteritems()}
-        '''update entry point storage'''
-        self.epmap[dname].update(epmap)
-        self.write()
+        '''update entry point storage
+        --> only if there is something to update though'''
+        if epmap:
+            if not self.epmap.get(dname):
+                self.epmap[dname] = {}
+            self.epmap[dname].update(epmap)
+            self.write()
 
     def write_st_dist(self, dist):
         """
@@ -74,7 +76,6 @@ class JsonBackend(BackendInterface):
         for dist in self.epmap:
             for en, ep in self.epmap[dist].get(group, {}).iteritems():
                 yield EntryPoint.parse(ep)
-
 
     def get_pr_dist_map(self, dist):
         return self.get_dist_map(dist.project_name)
@@ -141,6 +142,7 @@ class JsonBackend(BackendInterface):
         """
         if distname in self.get_dist_names():
             self.epmap.pop(distname)
+        self.write()
 
     def get_map(self, dist=None, group=None, name=None):
         """
