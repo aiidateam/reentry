@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 
-from sparkplug.abcbackend import BackendInterface
+from reentry.abcbackend import BackendInterface
 
 
 class JsonBackend(BackendInterface):
@@ -72,7 +72,7 @@ class JsonBackend(BackendInterface):
         """
         iterate over entry points within a given group
         """
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         for dist in self.epmap:
             for en, ep in self.epmap[dist].get(group, {}).iteritems():
                 yield EntryPoint.parse(ep)
@@ -84,7 +84,7 @@ class JsonBackend(BackendInterface):
         """
         return the entry map of a given distribution
         """
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         dmap = self.epmap.get(distname, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
@@ -103,7 +103,7 @@ class JsonBackend(BackendInterface):
         entry point with the same name, returns a list of entrypoints
         else, returns an entry point
         """
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         if not dist:
             specs = []
             for dist in self.epmap.keys():
@@ -149,7 +149,7 @@ class JsonBackend(BackendInterface):
         removes a group from all dists
         """
         for dist in self.epmap:
-            self.epmap[dist].pop(group)
+            self.epmap[dist].pop(group, None)
         self.write()
 
     def clear(self):
@@ -165,32 +165,36 @@ class JsonBackend(BackendInterface):
         """
         import re
         from collections import Sequence
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         '''sanitize dist kwarg'''
         if dist is None:
             dist = self.get_dist_names()
-        if not isinstance(dist, Sequence) or isinstance(dist, str):
+        if not isinstance(dist, Sequence) or isinstance(dist, (str, unicode)):
             dist = [dist]
+        dist = [d for d in dist if d in self.epmap]
 
         '''sanitize groups kwarg'''
         if group is None:
             group = self.get_group_names()
-        if not isinstance(group, Sequence) or isinstance(group, str):
+        if not isinstance(group, Sequence) or isinstance(group, (str, unicode)):
             group = [group]
 
         '''sanitize name kwarg'''
         if name is not None:
-            if not isinstance(name, Sequence) or isinstance(name, str):
+            if not isinstance(name, Sequence) or isinstance(name, (str, unicode)):
                 name = [name]
 
         emap = {}
         for d in dist:
-            emap[d] = {}
+            dmap = {}
             for g in group:
-                if g in self.epmap.get(d, {}):
-                    gmap = self.epmap.get(d, {}).get(g, {})
-                    emap[d][g] = {}
-                    for n, e in gmap.iteritems():
+                if g in self.epmap[d].keys():
+                    gmap = {}
+                    for n, e in self.epmap[d][g].iteritems():
                         if not name or any([re.match(i, n) for i in name]):
-                            emap[d][g][n] = EntryPoint.parse(e)
+                            gmap[n] = EntryPoint.parse(e)
+                    if gmap:
+                        dmap[g] = gmap
+            if dmap:
+                emap[d] = dmap
         return emap

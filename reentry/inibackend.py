@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from ConfigParser import SafeConfigParser
 
-from sparkplug.abcbackend import BackendInterface
+from reentry.abcbackend import BackendInterface
 
 
 class IniBackend(object):
@@ -70,7 +70,7 @@ class IniBackend(object):
         """
         returns a list of entry points for the given group name
         """
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
 
         return (EntryPoint.parse(self.mkspec(i)) for i in self.eppars.items(group))
 
@@ -85,7 +85,7 @@ class IniBackend(object):
         else:
             return {}
 
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         eplist = self.dstpars.items(dname)
         groups = set([k[1] for k in eplist])
         epmap = {i: [] for i in groups}
@@ -100,6 +100,6 @@ class IniBackend(object):
         """
         returns an entry point.
         """
-        from sparkplug.entrypoint import EntryPoint
+        from reentry.entrypoint import EntryPoint
         lhs = self.eppars.get(group, name)
         ep = EntryPoint.parse(self.mkspec(self

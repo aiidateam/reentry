@@ -11,7 +11,7 @@ def is_bool(value):
 def register_dist(dist, attr, value):
     """
     if value is True, register the distribution's entry points in
-    sparkplugs storage
+    reentrys storage
     """
     print(dist.get_name())
     '''assert is boolean'''
@@ -21,6 +21,6 @@ def register_dist(dist, attr, value):
         )
 
     if value:
-        from sparkplug.jsonbackend import JsonBackend
+        from reentry.jsonbackend import JsonBackend
         jb = JsonBackend()
         jb.write_st_dist(dist)

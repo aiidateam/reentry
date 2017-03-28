@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from sparkplug.jsonbackend import JsonBackend
+from reentry.jsonbackend import JsonBackend
 
 
 bkend = JsonBackend()
@@ -38,7 +38,7 @@ def register(distname):
     bkend.write_dist(distname)
 
 
-def scan(groups=[]):
+def scan(groups=[], group_re=None):
     """
     walks through all distributions available and registers entry points or only those in `groups`
     """
@@ -57,9 +57,13 @@ def scan(groups=[]):
         dist = dists[0]
         emap = dist.get_entry_map()
         if groups:
-            emap = {k: v for k, v in emap.iteritems() if k in groups}
+            dmap = {k: v for k, v in emap.iteritems() if k in groups}
+        elif group_re:
+            dmap = {k: v for k, v in emap.iteritems() if group_re.match(k)}
+        else:
+            dmap = emap
         dname = dist.project_name
-        bkend._write_dist(dname, emap)
+        bkend._write_dist(dname, dmap)
 
 
 def unregister(distname):

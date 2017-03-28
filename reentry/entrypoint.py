@@ -46,4 +46,4 @@ class EntryPoint(object):
         return s
 
     def __repr__(self):
-        return 'sparkplug.EntryPoint.parse({})'.format(str(self))
+        return 'reentry.EntryPoint.parse({})'.format(str(self))
