@@ -24,7 +24,6 @@ def scan(groups, regex):
             click.exit()
         import re
         matchstr = re.compile("|".join(['({})'.format(i) for i in groups]))
-        print str(matchstr.pattern)
         scan_groups(group_re=matchstr)
     else:
         scan_groups(groups)
