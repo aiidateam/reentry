@@ -27,5 +27,9 @@ if __name__=='__main__':
             'Environment :: Plugins',
             'Intended Audience :: Developers',
             'Topic :: Software Development'
-        ]
+        ],
+        install_requires={
+            'setuptools >= 18.5',
+            'click'
+        }
     )
