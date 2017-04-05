@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 if __name__=='__main__':
     setup(
         name = 'reentry',
-        version = '0.9',
+        version = '0.9.1',
         author = 'Rico Häuselmann',
         license = 'MIT License',
         packages = find_packages(),
