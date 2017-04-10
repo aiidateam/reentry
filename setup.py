@@ -31,7 +31,7 @@ if __name__ == ' __main__':
             'click',
 
         ],
- 	classifiers=[
+        classifiers=[
             'License :: OSI Approved :: MIT License',
             'Programming Language :: Python',
             'Development Status :: 5 - Production/Stable',
