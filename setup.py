@@ -20,7 +20,11 @@ if __name__=='__main__':
                 'reentry = reentry.cli:reentry'
             ]
         },
-        classifiers=[
+        install_requires=[
+            'click',
+
+        ],
+ 	classifiers=[
             'License :: OSI Approved :: MIT License',
             'Programming Language :: Python',
             'Development Status :: 5 - Production/Stable',
