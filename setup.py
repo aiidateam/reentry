@@ -2,13 +2,14 @@
 from os import path
 from setuptools import setup, find_packages
 
-with open(path.join(path.dirname(path.abspath(__file__)), 'README.rst'), 'r') as readme:
+readmepath = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
+with open(readmepath, 'r') as readme:
     long_desc = readme.read()
 
 if __name__ == ' __main__':
     setup(
         name = 'reentry',
-        version = '0.9',
+        version = '1.0',
         author = 'Rico Häuselmann',
         license = 'MIT License',
         description='A plugin manager based on setuptools entry points mechanism',
