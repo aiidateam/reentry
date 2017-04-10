@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from setuptools import setup, find_packages
 
-if __name__=='__main__':
+if __name__ == ' __main__':
     setup(
         name = 'reentry',
         version = '0.9',
