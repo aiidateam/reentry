@@ -14,7 +14,7 @@ if __name__=='__main__':
         },
         entry_points={
             'distutils.setup_keywords': [
-                'reentry_register = reentry.register:register_dist'
+                'reentry_register = reentry.hooks:register_dist'
             ],
             'console_scripts': [
                 'reentry = reentry.cli:reentry'
