@@ -8,10 +8,10 @@ with open(readmepath, 'r') as readme:
 
 if __name__ == ' __main__':
     setup(
-        name = 'reentry',
-        version = '1.0',
-        author = 'Rico Häuselmann',
-        license = 'MIT License',
+        name='reentry',
+        version='1.0',
+        author='Rico Häuselmann',
+        license='MIT License',
         description='A plugin manager based on setuptools entry points mechanism',
         long_description=long_desc,
         packages=find_packages(),
