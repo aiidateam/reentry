@@ -8,7 +8,7 @@ with open(readmepath, 'r') as readme:
 
 setup(
     name = 'reentry',
-    version = '1.0',
+    version = '1.0.1',
     author = 'Rico Häuselmann',
     license = 'MIT License',
     description='A plugin manager based on setuptools entry points mechanism',
