@@ -167,11 +167,8 @@ class JsonBackend(BackendInterface):
         from collections import Sequence
         from reentry.entrypoint import EntryPoint
         '''sanitize dist kwarg'''
-        if dist is None:
-            dist = self.get_dist_names()
-        if not isinstance(dist, Sequence) or isinstance(dist, (str, unicode)):
-            dist = [dist]
-        dist = [d for d in dist if d in self.epmap]
+        if dist not in self.epmap:
+            raise ValueError("The {} distribution was not found.".format(dist))
 
         '''sanitize groups kwarg'''
         if group is None:
@@ -184,17 +181,13 @@ class JsonBackend(BackendInterface):
             if not isinstance(name, Sequence) or isinstance(name, (str, unicode)):
                 name = [name]
 
-        emap = {}
-        for d in dist:
-            dmap = {}
-            for g in group:
-                if g in self.epmap[d].keys():
-                    gmap = {}
-                    for n, e in self.epmap[d][g].iteritems():
-                        if not name or any([re.match(i, n) for i in name]):
-                            gmap[n] = EntryPoint.parse(e)
-                    if gmap:
-                        dmap[g] = gmap
-            if dmap:
-                emap[d] = dmap
-        return emap
+        dmap = {}
+        for g in group:
+            if g in self.epmap[dist].keys():
+                gmap = {}
+                for n, e in self.epmap[dist][g].iteritems():
+                    if not name or any([re.match(i, n) for i in name]):
+                        gmap[n] = EntryPoint.parse(e)
+                if gmap:
+                    dmap[g] = gmap
+        return dmap
