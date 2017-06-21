@@ -36,5 +36,8 @@ def scan(groups, regex):
 def map(dist, group, name):
     import pprint
     from reentry.manager import bkend
-
-    click.echo(pprint.pformat(bkend.get_map(dist, group, name)))
+    if dist is None:
+        res = {d: bkend.get_map(d, group, name) for d in bkend.get_dist_names()}
+    else:
+        res = bkend.get_map(dist, group, name)
+    click.echo(pprint.pformat(res))
