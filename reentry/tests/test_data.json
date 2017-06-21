@@ -1,0 +1,7 @@
+{
+    "distA": {
+        "groupA": {
+            "distA.epA": "distA.epA = pkgA.moduleA:ClassA"
+        }
+    }
+}

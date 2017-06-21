@@ -11,22 +11,19 @@ class BackendInterface(object):
         """
         get a map of entry points, filtered by
 
-        :param dist: single distribution name or sequence of distribution names
+        :param dist: distribution name
         :param groups: single group name or sequence of group names
         :param name: entry point name or sequence of names
 
         The map is structured as follows::
 
             map = {
-                'group': {
-                    'dist': [
-                        'entry.point',
+                    '<group>': {
+                        '<entrypoint name>: <EntryPoint instance>
                         ...
-                    ],
+                    },
                     ...
                 },
-                ...
-            }
         """
 
     def iter_group(self, group):

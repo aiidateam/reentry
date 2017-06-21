@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+"""A backend that uses a json file to store entry points"""
 import json
 
 from reentry.abcbackend import BackendInterface
@@ -8,10 +9,12 @@ class JsonBackend(BackendInterface):
     """
     Backend using json
     """
-    def __init__(self):
+
+    def __init__(self, datafile=None):
         super(JsonBackend, self).__init__()
         from os.path import join, dirname, exists
         self.datafile = join(dirname(__file__), 'js_data')
+        self.datafile = datafile or self.datafile
         if not exists(self.datafile):
             with open(self.datafile, 'w') as datafp:
                 datafp.write('{}')
