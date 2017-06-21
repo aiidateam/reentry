@@ -29,6 +29,53 @@ Reentry forgoes this dependency check for entry points without such 'extras'
 dependencies and thereby manages to be fast and scale better, with the amount of
 installed plugins, not installed python packages in general.
 
+Standalone Manager Usage
+------------------------
+
+Sometimes it might be necessary to update the cached entry points, for example
+
+   * after uninstalling a plugin (there are no uninstall hooks by setuptools atm)
+   * after installing a plugin that does not use install hooks
+   * while developping a plugin / plugin host
+
+for those cases reentry has a commandline interface::
+
+   $ reentry --help
+   Usage: reentry [OPTIONS] COMMAND [ARGS]...
+   
+     manage your reentry python entry point cache
+   
+   Options:
+     --help  Show this message and exit.
+   
+   Commands:
+     map
+     scan  Scan for python entry points to cache for...
+
+::
+
+   $ reentry scan --help
+   Usage: reentry scan [OPTIONS] PATTERN
+
+      Scan for python entry points to cache for faster loading.
+
+      Scan only for specific PATTERNs or leave empty to scan all
+
+   Options:
+      -r, --regex  Treat PATTERNs as regular expresions
+      --help       Show this message and exit.
+
+::
+
+   $ reentry map --help
+   Usage: reentry map [OPTIONS]
+   
+   Options:
+     --dist TEXT   limit map to a distribution
+     --group TEXT  limit map to an entry point group
+     --name TEXT   limit map to entrypoints that match NAME
+     --help        Show this message and exit.
+
 CLI Example
 -----------
 
