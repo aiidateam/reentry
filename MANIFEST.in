@@ -1,3 +1,3 @@
 include README.rst
 include LICENSE
-recursive-include reentry/tests/*json
+recursive-include reentry tests/*json
