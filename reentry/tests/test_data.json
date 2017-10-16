@@ -2,6 +2,17 @@
     "distA": {
         "groupA": {
             "distA.epA": "distA.epA = pkgA.moduleA:ClassA"
+        },
+        "groupB": {
+            "distA.epB": "distA.epB = pkgA.moduleB:ClassB"
+        }
+    },
+    "distB": {
+        "groupB": {
+            "distB.epB": "distB.epB = pkgB.moduleB:ClassB"
+        },
+        "groupC": {
+            "distB.epC": "distB.epC = pkgB.moduleC:ClassC"
         }
     }
 }
