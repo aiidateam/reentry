@@ -9,6 +9,7 @@ from reentry.entrypoint import EntryPoint
 
 
 def test_get_map(bkend):
+    """Test the backend's get_map method without arguments"""
     ep_map = bkend.get_map()
 
     assert 'groupB' in ep_map

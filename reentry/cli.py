@@ -41,7 +41,10 @@ def map_(dist, group, name):
     import pprint
     from reentry import manager
     if dist is None:
-        res = {d: manager.get_entry_map(d, group, name) for d in manager.distribution_names}
+        res = {
+            d: manager.get_entry_map(d, group, name)
+            for d in manager.distribution_names
+        }
     else:
-        res = bkend.get_map(dist, group, name)
+        res = manager.get_entry_map(dist, group, name)
     click.echo(pprint.pformat(res))

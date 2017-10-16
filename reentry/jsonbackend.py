@@ -173,36 +173,23 @@ class JsonBackend(BackendInterface):
         see BackendInterface docs
         """
         import re
-        from collections import Sequence
         from reentry.entrypoint import EntryPoint
         # sanitize dist kwarg
-        if not dist:
+        dist_list = _listify(dist)
+        if not dist_list:
             dist_list = self.get_dist_names()
-        elif not isinstance(dist, Sequence) or isinstance(dist, (str, unicode)):
-            if dist not in self.epmap:
-                raise ValueError("The {} distribution was not found.".format(dist))
-            else:
-                dist_list = [dist]
-        else:
-            dist_list = dist
 
         # sanitize groups kwarg
-        if group is None:
+        group_list = _listify(group)
+        if group_list is None:
             group_list = self.get_group_names()
-        elif not isinstance(group, Sequence) or isinstance(
-                group, (str, unicode)):
-            group_list = [group]
-        else:
-            group_list = group
         # sanitize name kwarg
-        if name is not None:
-            if not isinstance(name, Sequence) or isinstance(
-                    name, (str, unicode)):
-                name = [name]
+        name = _listify(name)
 
         entry_point_map = {}
-        for dist in dist_list:
-            for group_name in self._filter_groups_by_distribution(distribution_list=[dist], group_list=group_list):
+        for distribution in dist_list:
+            for group_name in self._filter_groups_by_distribution(
+                    distribution_list=[distribution], group_list=group_list):
                 group_map = {}
                 for ep_name, entry_point in self.epmap[dist][
                         group_name].iteritems():
@@ -214,13 +201,32 @@ class JsonBackend(BackendInterface):
                     entry_point_map[group_name].update(group_map)
         return entry_point_map
 
-    def _filter_groups_by_distribution(self, distribution_list, group_list=None):
+    def _filter_groups_by_distribution(self,
+                                       distribution_list,
+                                       group_list=None):
+        """List only groups (optionally from a given list of groups) registered for the given list of distributions"""
         if not group_list:
             group_list = self.get_group_names()
         group_set = set()
         for distribution in distribution_list:
             if distribution not in self.epmap:
-                raise ValueError("The {} distribution was not found.".format(distribution))
+                raise ValueError(
+                    "The {} distribution was not found.".format(distribution))
             else:
-                group_set.update([group_name for group_name in self.epmap[distribution].keys() if group_name in group_list])
+                group_set.update([
+                    group_name
+                    for group_name in self.epmap[distribution].keys()
+                    if group_name in group_list
+                ])
         return group_set
+
+
+def _listify(sequence_or_name):
+    """Wrap a single name in a list, leave sequences and None unchanged"""
+    from collections import Sequence
+    if sequence_or_name is None:
+        return None
+    elif not isinstance(sequence_or_name, Sequence) or isinstance(
+            sequence_or_name, (str, unicode)):
+        return [sequence_or_name]
+    return sequence_or_name

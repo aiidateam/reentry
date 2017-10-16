@@ -4,7 +4,6 @@ from os.path import join, dirname
 
 import pytest
 
-
 TEST_DATA_FILE = join(dirname(__file__), 'test_data.json')
 
 

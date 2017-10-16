@@ -31,7 +31,8 @@ class PluginManager(object):
 
         The backend may only load pkg_resources if any of the entry points contain extras requirements
         """
-        return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
+        return self._backend.get_map(
+            dist=dist_names, group=groups, name=ep_names)
 
     def register(self, distname):
         """
@@ -74,9 +75,9 @@ class PluginManager(object):
         """
         self._backend.rm_dist(distname)
 
-
     @property
     def distribution_names(self):
         return self._backend.get_dist_names()
+
 
 DEFAULT_MANAGER = PluginManager()
