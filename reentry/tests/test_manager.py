@@ -6,11 +6,19 @@ from reentry.tests.fixtures import test_data, bkend, manager
 
 
 def test_get_entry_map(manager):
+    """test full map"""
+    epmap = manager.get_entry_map()
+    assert 'groupA' in epmap
+    assert 'groupB' in epmap
+    assert 'groupC' in epmap
+
+
+def test_get_entry_map_dist(manager):
     """
     The map for distA in the fixture should contain
     a group and an entry point
     """
-    epmap = manager.get_entry_map('distA')
+    epmap = manager.get_entry_map(dist_names='distA')
     assert 'groupA' in epmap
     assert 'groupB' in epmap
     assert 'groupC' not in epmap
@@ -18,9 +26,9 @@ def test_get_entry_map(manager):
     assert 'distA.epB' in epmap.get('groupB', {})
 
 
-def test_entry_map_group(manager):
+def test_entry_map_dist_group(manager):
     """Check filtering entry point map for a distribution by group"""
-    epmap = manager.get_entry_map('distA', group='groupA')
+    epmap = manager.get_entry_map(dist_names='distA', groups='groupA')
     assert 'groupA' in epmap
     assert 'groupB' not in epmap
     assert 'distA.epA' in epmap.get('groupA', {})
