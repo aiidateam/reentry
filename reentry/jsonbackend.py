@@ -183,36 +183,44 @@ class JsonBackend(BackendInterface):
                 raise ValueError("The {} distribution was not found.".format(dist))
             else:
                 dist_list = [dist]
+        else:
+            dist_list = dist
 
         # sanitize groups kwarg
         if group is None:
             group_list = self.get_group_names()
-        if not isinstance(group, Sequence) or isinstance(
+        elif not isinstance(group, Sequence) or isinstance(
                 group, (str, unicode)):
             group_list = [group]
+        else:
+            group_list = group
         # sanitize name kwarg
         if name is not None:
             if not isinstance(name, Sequence) or isinstance(
                     name, (str, unicode)):
                 name = [name]
 
-        distribution_map = {}
-        for group_name in group_list:
-            if group_name in self.epmap[dist].keys():
+        entry_point_map = {}
+        for dist in dist_list:
+            for group_name in self._filter_groups_by_distribution(distribution_list=[dist], group_list=group_list):
                 group_map = {}
                 for ep_name, entry_point in self.epmap[dist][
                         group_name].iteritems():
                     if not name or any([re.match(i, ep_name) for i in name]):
                         group_map[ep_name] = EntryPoint.parse(entry_point)
                 if group_map:
-                    distribution_map[group_name] = group_map
-        return distribution_map
+                    if group_name not in entry_point_map:
+                        entry_point_map[group_name] = {}
+                    entry_point_map[group_name].update(group_map)
+        return entry_point_map
 
-    def _filter_groups_by_distribution(self, distribution_list):
+    def _filter_groups_by_distribution(self, distribution_list, group_list=None):
+        if not group_list:
+            group_list = self.get_group_names()
         group_set = set()
         for distribution in distribution_list:
             if distribution not in self.epmap:
                 raise ValueError("The {} distribution was not found.".format(distribution))
             else:
-                group_set.update(self.epmap[distribution].keys())
+                group_set.update([group_name for group_name in self.epmap[distribution].keys() if group_name in group_list])
         return group_set

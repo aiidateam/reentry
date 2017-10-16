@@ -25,13 +25,13 @@ class PluginManager(object):
             else:
                 yield entry_point
 
-    def get_entry_map(self, distname, group=None):
+    def get_entry_map(self, dist_names=None, groups=None, ep_names=None):
         """
         return the entry point map for `group` or the whole map for `dist`
 
         The backend may only load pkg_resources if any of the entry points contain extras requirements
         """
-        return self._backend.get_map(dist=distname, group=group)
+        return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
 
     def register(self, distname):
         """
@@ -74,5 +74,9 @@ class PluginManager(object):
         """
         self._backend.rm_dist(distname)
 
+
+    @property
+    def distribution_names(self):
+        return self._backend.get_dist_names()
 
 DEFAULT_MANAGER = PluginManager()

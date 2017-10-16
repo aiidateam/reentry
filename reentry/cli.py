@@ -24,7 +24,7 @@ def scan(groups, regex):
     if regex:
         if not groups:
             # nothing to do
-            raise sys.exit(0)
+            sys.exit(0)
         import re
         matchstr = re.compile("|".join(['({})'.format(i) for i in groups]))
         manager.scan(group_re=matchstr)
@@ -39,12 +39,9 @@ def scan(groups, regex):
 def map_(dist, group, name):
     """Print out a map of cached entry points"""
     import pprint
-    from reentry.manager import bkend
+    from reentry import manager
     if dist is None:
-        res = {
-            d: bkend.get_map(d, group, name)
-            for d in bkend.get_dist_names()
-        }
+        res = {d: manager.get_entry_map(d, group, name) for d in manager.distribution_names}
     else:
         res = bkend.get_map(dist, group, name)
     click.echo(pprint.pformat(res))

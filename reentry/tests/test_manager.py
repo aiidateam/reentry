@@ -29,8 +29,8 @@ def test_entry_map_group(manager):
 def test_iter_entry_points(manager):
     """Test the drop-in replacement for pkg_resources.iter_entry_points"""
     entry_points = manager.iter_entry_points(group='groupA')
-    assert 'distA.epA' in entry_points
+    assert 'distA.epA' in [e.name for e in entry_points]
 
-    entry_points = manager.iter_entry_points(group='groupB')
-    assert 'distA.epB' in entry_points
-    assert 'distB.epB' in entry_points
+    entry_points = list(manager.iter_entry_points(group='groupB'))
+    assert 'distA.epB' in [e.name for e in entry_points]
+    assert 'distB.epB' in [e.name for e in entry_points]

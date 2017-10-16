@@ -14,4 +14,4 @@ def test_get_map(bkend):
     assert 'groupB' in ep_map
     assert 'distA.epB' in ep_map['groupB']
     assert 'distB.epB' in ep_map['groupB']
-    assert isinstance(EntryPoint, ep_map['groupB']['distB.epB'])
+    assert isinstance(ep_map['groupB']['distB.epB'], EntryPoint)
