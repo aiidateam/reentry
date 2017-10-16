@@ -1,12 +1,17 @@
 # -*- coding: utf8 -*-
-from abc import ABCMeta, abstractmethod
+"""Abstract base class for backends"""
+from abc import ABCMeta
 
 
 class BackendInterface(object):
+    """
+    Backend interface, subclass to implement a concrete backend.
+
+
+    All methods without a method body need to be implemented in a backend.
+    """
     __metaclass__ = ABCMeta
-    """
-    Backend interface
-    """
+
     def get_map(self, dist=None, group=None, name=None):
         """
         get a map of entry points, filtered by
@@ -46,7 +51,6 @@ class BackendInterface(object):
         returns a map {group:[entry_points, ...], ...} for the given dist name
         """
 
-
     def write_pr_dist(self, dist):
         """
         add a distribution, empty by default
@@ -57,24 +61,33 @@ class BackendInterface(object):
         add a distribution during it's installation
         """
 
-    def write_dist(self, distname):
+    def write_dist(self, distname, entry_point_map=None):
         """
         take a distribution's project name, add the distribution
         """
-        dist = self.pr_dist_from_name(distname)
-        self.write_pr_dist(dist)
+        if entry_point_map:
+            self.write_dist_map(
+                distname=distname, entry_point_map=entry_point_map)
+        else:
+            dist = self.pr_dist_from_name(distname)
+            self.write_pr_dist(dist)
+
+    def write_dist_map(self, distname, entry_point_map=None):
+        """Write a distribution given the name and entry point map"""
 
     def rm_dist(self, distname):
         """
         removes a distribution completely
         """
 
-    def pr_dist_map(self, dist):
+    @staticmethod
+    def pr_dist_map(dist):
         dname = dist.project_name
         epmap = dist.get_entry_map()
         return dname, epmap
 
-    def pr_dist_from_name(self, distname):
+    @staticmethod
+    def pr_dist_from_name(distname):
         from pkg_resources import get_distribution
         dist = get_distribution(distname)
         return dist

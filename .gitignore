@@ -16,3 +16,10 @@ __pycache__
 /*egg-info/
 *dist
 build/
+
+*.orig
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*
+.coverage

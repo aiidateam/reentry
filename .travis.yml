@@ -1,0 +1,9 @@
+language: python
+python: 2.7
+cache: pip
+install:
+    - pip install -e .[dev]
+env:
+    - TEST_TYPE="pre-commit"
+    - TEST_TYPE="unittests"
+script: "./run_ci_tests.sh"

@@ -1,0 +1,20 @@
+- repo: git://github.com/pre-commit/mirrors-yapf
+  sha: v0.17.0
+  hooks:
+  - id: yapf
+    language: system
+
+- repo: git://github.com/guykisel/prospector-mirror
+  sha: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+  hooks:
+  - id: prospector
+    language: system
+
+- repo: local
+  hooks:
+  - id: travis-linter
+    name: travis
+    entry: travis lint
+    files: .travis.yml
+    language: ruby
+    additional_dependencies: ['travis']

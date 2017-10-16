@@ -24,40 +24,44 @@ class JsonBackend(BackendInterface):
         """
         read state from storage
         """
-        with open(self.datafile, 'r') as fp:
-            return json.load(fp)
+        with open(self.datafile, 'r') as cache_file_obj:
+            return json.load(cache_file_obj)
 
     def write(self):
         """
         write the current state to storage
         """
-        with open(self.datafile, 'w') as fp:
-            json.dump(self.epmap, fp)
+        with open(self.datafile, 'w') as cache_file_obj:
+            json.dump(self.epmap, cache_file_obj)
 
     def write_pr_dist(self, dist):
         """
         add a distribution, empty by default
         """
         dname, epmap = self.pr_dist_map(dist)
-        self._write_dist(dname, epmap)
+        self.write_dist_map(dname, epmap)
 
-    def _write_dist(self, distname, epmap):
+    def write_dist_map(self, distname, entry_point_map=None):
         dname = distname
-        '''extract entry points that are clearly not for plugins'''
-        epmap.pop('console_scripts', None)
-        epmap.pop('gui_scripts', None)
-        epmap.pop('distutils.commands', None)
-        epmap.pop('distutils.setup_keywords', None)
-        epmap.pop('setuptools.installation', None)
-        epmap.pop('setuptools.file_finders', None)
-        epmap.pop('egg_info.writers', None)
-        epmap = {k: {kk: str(vv) for kk, vv in v.iteritems()} for k, v in epmap.iteritems()}
-        '''update entry point storage
-        --> only if there is something to update though'''
-        if epmap:
+        # extract entry points that are clearly not for plugins
+        entry_point_map.pop('console_scripts', None)
+        entry_point_map.pop('gui_scripts', None)
+        entry_point_map.pop('distutils.commands', None)
+        entry_point_map.pop('distutils.setup_keywords', None)
+        entry_point_map.pop('setuptools.installation', None)
+        entry_point_map.pop('setuptools.file_finders', None)
+        entry_point_map.pop('egg_info.writers', None)
+        entry_point_map = {
+            k: {kk: str(vv)
+                for kk, vv in v.iteritems()}
+            for k, v in entry_point_map.iteritems()
+        }
+        # update entry point storage
+        # --> only if there is something to update though
+        if entry_point_map:
             if not self.epmap.get(dname):
                 self.epmap[dname] = {}
-            self.epmap[dname].update(epmap)
+            self.epmap[dname].update(entry_point_map)
             self.write()
 
     def write_st_dist(self, dist):
@@ -69,7 +73,7 @@ class JsonBackend(BackendInterface):
         for group in epmap:
             elist = epmap[group]
             epmap[group] = {i.split(' = ', 1)[0]: i for i in elist}
-        self._write_dist(dname, epmap)
+        self.write_dist_map(dname, epmap)
 
     def iter_group(self, group):
         """
@@ -77,18 +81,19 @@ class JsonBackend(BackendInterface):
         """
         from reentry.entrypoint import EntryPoint
         for dist in self.epmap:
-            for en, ep in self.epmap[dist].get(group, {}).iteritems():
-                yield EntryPoint.parse(ep)
+            for _, entry_point_spec in self.epmap[dist].get(group,
+                                                            {}).iteritems():
+                yield EntryPoint.parse(entry_point_spec)
 
     def get_pr_dist_map(self, dist):
         return self.get_dist_map(dist.project_name)
 
-    def get_dist_map(self, distname):
+    def get_dist_map(self, dist):
         """
-        return the entry map of a given distribution
+        Return the entry map of a given distribution
         """
         from reentry.entrypoint import EntryPoint
-        dmap = self.epmap.get(distname, {}).copy()
+        dmap = self.epmap.get(dist, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
                 dmap[gname][epname] = EntryPoint.parse(dmap[gname][epname])
@@ -96,7 +101,7 @@ class JsonBackend(BackendInterface):
 
     def get_ep(self, group, name, dist=None):
         """
-        get an entry point
+        Get an entry point
 
         :param group: the group name
         :param name: the entry point name
@@ -109,29 +114,30 @@ class JsonBackend(BackendInterface):
         from reentry.entrypoint import EntryPoint
         if not dist:
             specs = []
-            for dist in self.epmap.keys():
-                spc = self.get_ep(group, name, dist=dist)
-                spc and specs.append(spc)
+            for dist_name in self.epmap.keys():
+                spc = self.get_ep(group, name, dist=dist_name)
+                if spc:
+                    specs.append(spc)
             if len(specs) > 1:
                 return specs
             elif len(specs) == 1:
                 return specs[0]
         else:
-            distm = self.epmap.get(dist, {})
-            groupm = distm.get(group, {})
-            spec = groupm.get(name)
+            distribution_map = self.epmap.get(dist, {})
+            group_map = distribution_map.get(group, {})
+            spec = group_map.get(name)
             if spec:
                 return EntryPoint.parse(spec)
 
     def get_dist_names(self):
         """
-        returns a list of distribution names
+        Returns a list of distribution names
         """
         return self.epmap.keys()
 
     def get_group_names(self):
         """
-        returns a list of group names
+        Returns a list of group names
         """
         glist = []
         for dist in self.get_dist_names():
@@ -169,28 +175,29 @@ class JsonBackend(BackendInterface):
         import re
         from collections import Sequence
         from reentry.entrypoint import EntryPoint
-        '''sanitize dist kwarg'''
+        # sanitize dist kwarg
         if dist not in self.epmap:
             raise ValueError("The {} distribution was not found.".format(dist))
-
-        '''sanitize groups kwarg'''
+        # sanitize groups kwarg
         if group is None:
-            group = self.get_group_names()
-        if not isinstance(group, Sequence) or isinstance(group, (str, unicode)):
-            group = [group]
-
-        '''sanitize name kwarg'''
+            group_list = self.get_group_names()
+        if not isinstance(group, Sequence) or isinstance(
+                group, (str, unicode)):
+            group_list = [group]
+        # sanitize name kwarg
         if name is not None:
-            if not isinstance(name, Sequence) or isinstance(name, (str, unicode)):
+            if not isinstance(name, Sequence) or isinstance(
+                    name, (str, unicode)):
                 name = [name]
 
-        dmap = {}
-        for g in group:
-            if g in self.epmap[dist].keys():
-                gmap = {}
-                for n, e in self.epmap[dist][g].iteritems():
-                    if not name or any([re.match(i, n) for i in name]):
-                        gmap[n] = EntryPoint.parse(e)
-                if gmap:
-                    dmap[g] = gmap
-        return dmap
+        distribution_map = {}
+        for group_name in group_list:
+            if group_name in self.epmap[dist].keys():
+                group_map = {}
+                for ep_name, entry_point in self.epmap[dist][
+                        group_name].iteritems():
+                    if not name or any([re.match(i, ep_name) for i in name]):
+                        group_map[ep_name] = EntryPoint.parse(entry_point)
+                if group_map:
+                    distribution_map[group_name] = group_map
+        return distribution_map

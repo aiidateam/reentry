@@ -1,0 +1,6 @@
+[run]
+source = reentry
+omit = *test*
+
+[html]
+directory = coverage/html
