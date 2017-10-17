@@ -176,7 +176,7 @@ class JsonBackend(BackendInterface):
         from reentry.entrypoint import EntryPoint
         # sanitize dist kwarg
         dist_list = _listify(dist)
-        if not dist_list:
+        if dist_list is None:
             dist_list = self.get_dist_names()
 
         # sanitize groups kwarg
@@ -191,7 +191,7 @@ class JsonBackend(BackendInterface):
             for group_name in self._filter_groups_by_distribution(
                     distribution_list=[distribution], group_list=group_list):
                 group_map = {}
-                for ep_name, entry_point in self.epmap[dist][
+                for ep_name, entry_point in self.epmap[distribution][
                         group_name].iteritems():
                     if not name or any([re.match(i, ep_name) for i in name]):
                         group_map[ep_name] = EntryPoint.parse(entry_point)
@@ -205,7 +205,7 @@ class JsonBackend(BackendInterface):
                                        distribution_list,
                                        group_list=None):
         """List only groups (optionally from a given list of groups) registered for the given list of distributions"""
-        if not group_list:
+        if group_list is None:
             group_list = self.get_group_names()
         group_set = set()
         for distribution in distribution_list:
