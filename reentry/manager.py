@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 """Manager for entry point based plugins. Main client facing API"""
-
 import six
 
 from reentry.jsonbackend import JsonBackend

@@ -39,5 +39,6 @@ setup(
             'yapf',
             'coverage',
             'pytest-cov',
+            'tox'
         ]
     })
