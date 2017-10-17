@@ -20,20 +20,15 @@ setup(
     include_package_data=True,
     package_data={'': ['js_data', 'README.rst']},
     entry_points={
-        'distutils.setup_keywords': [
-            'reentry_register = reentry.hooks:register_dist',
-            'reentry_scan = reentry.hooks:scan'
-        ],
-        'console_scripts': ['reentry = reentry.cli:reentry']
+        'distutils.setup_keywords': ['reentry_register = reentry.hooks:register_dist', 'reentry_scan = reentry.hooks:scan'],
+        'console_scripts': ['reentry = reentry.cli:reentry'],
+        'test_entry_points': ['test = reentry.cli:reentry']
     },
     classifiers=[
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Plugins', 'Intended Audience :: Developers',
-        'Topic :: Software Development'
+        'License :: OSI Approved :: MIT License', 'Programming Language :: Python', 'Development Status :: 5 - Production/Stable',
+        'Environment :: Plugins', 'Intended Audience :: Developers', 'Topic :: Software Development'
     ],
-    install_requires={'setuptools >= 18.5', 'click'},
+    install_requires={'setuptools >= 18.5', 'click', 'six'},
     extras_require={
         'dev': [
             'pre-commit',

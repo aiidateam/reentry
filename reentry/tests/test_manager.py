@@ -42,3 +42,31 @@ def test_iter_entry_points(manager):
     entry_points = list(manager.iter_entry_points(group='groupB'))
     assert 'distA.epB' in [e.name for e in entry_points]
     assert 'distB.epB' in [e.name for e in entry_points]
+
+
+def test_register(manager):
+    """Test registering a distribution"""
+    manager.register('reentry')
+    ep_map = manager.get_entry_map(dist_names='reentry')
+    assert 'test_entry_points' in ep_map
+    assert 'console_scripts' not in ep_map
+
+
+def test_scan(manager):
+    """Test scanning for entry points"""
+    manager.scan()
+    ep_map = manager.get_entry_map(dist_names='reentry')
+    assert 'test_entry_points' in ep_map
+    assert 'console_scripts' not in ep_map
+
+
+def test_scan_group(manager):
+    manager.scan(groups=['test_entry_points'])
+    ep_map = manager.get_entry_map(dist_names='reentry')
+    assert 'test_entry_points' in ep_map
+    assert 'console_scripts' not in ep_map
+
+
+def test_unregister(manager):
+    manager.unregister('distA')
+    assert 'distA' not in manager.distribution_names

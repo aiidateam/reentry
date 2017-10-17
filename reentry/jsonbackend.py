@@ -2,6 +2,8 @@
 """A backend that uses a json file to store entry points"""
 import json
 
+import six
+
 from reentry.abcbackend import BackendInterface
 
 
@@ -51,11 +53,7 @@ class JsonBackend(BackendInterface):
         entry_point_map.pop('setuptools.installation', None)
         entry_point_map.pop('setuptools.file_finders', None)
         entry_point_map.pop('egg_info.writers', None)
-        entry_point_map = {
-            k: {kk: str(vv)
-                for kk, vv in v.iteritems()}
-            for k, v in entry_point_map.iteritems()
-        }
+        entry_point_map = {k: {kk: str(vv) for kk, vv in six.iteritems(v)} for k, v in six.iteritems(entry_point_map)}
         # update entry point storage
         # --> only if there is something to update though
         if entry_point_map:
@@ -81,8 +79,7 @@ class JsonBackend(BackendInterface):
         """
         from reentry.entrypoint import EntryPoint
         for dist in self.epmap:
-            for _, entry_point_spec in self.epmap[dist].get(group,
-                                                            {}).iteritems():
+            for _, entry_point_spec in six.iteritems(self.epmap[dist].get(group, {})):
                 yield EntryPoint.parse(entry_point_spec)
 
     def get_pr_dist_map(self, dist):
@@ -172,7 +169,6 @@ class JsonBackend(BackendInterface):
         """
         see BackendInterface docs
         """
-        import re
         from reentry.entrypoint import EntryPoint
         # sanitize dist kwarg
         dist_list = self._dist_list_from_arg(dist)
@@ -185,33 +181,60 @@ class JsonBackend(BackendInterface):
 
         filtered_entry_points = self._filter_entry_points(dist_list, group_list, name_list)
         entry_point_map = {}
-        for entry_point, ep_info in filtered_entry_points.iteritems():
+        for entry_point, ep_info in six.iteritems(filtered_entry_points):
             if not ep_info['group'] in entry_point_map:
                 entry_point_map[ep_info['group']] = {}
             entry_point_map[ep_info['group']][ep_info['name']] = EntryPoint.parse(entry_point)
 
         return entry_point_map
 
-    def _filter_groups_by_distribution(self,
-                                       distribution_list,
-                                       group_list=None):
+    def _filter_groups_by_distribution(self, distribution_list, group_list=None):
         """List only groups (optionally from a given list of groups) registered for the given list of distributions"""
         if group_list is None:
             group_list = self.get_group_names()
         group_set = set()
         for distribution in distribution_list:
             if distribution not in self.epmap:
-                raise ValueError(
-                    "The {} distribution was not found.".format(distribution))
+                raise ValueError("The {} distribution was not found.".format(distribution))
             else:
-                group_set.update([
-                    group_name
-                    for group_name in self.epmap[distribution].keys()
-                    if group_name in group_list
-                ])
+                group_set.update([group_name for group_name in self.epmap[distribution].keys() if group_name in group_list])
         return group_set
 
     def _filter_entry_points(self, dist_list, group_list, name_list):
+        """
+        Get a flat dict of annotated entry points, filtered by various criteria
+
+        The dict is formatted like _flat_entry_points() output
+
+        filter by::
+
+            * dist_list: list of distribution names
+            * group_list: list of group names
+            * name_list: list of regex patterns for entry point names
+
+        Example::
+
+            >> backend.epmap
+
+            {
+                'A': {
+                    'B': {'entry_point_C': 'entry_point_c = A.foo:bar'},
+                    ...
+                },
+                'other_dist': {
+                    'B': { ... },
+                    ...
+                },
+                ...
+            }
+
+            >> backend._filter_entry_points(dist_list=['A'], group_list=['B'], name_list=['.*C.*'])
+
+            {'B':
+                {'entry_point_C': 'entry_point_c = A.foo:bar'}
+            }
+
+        """
         entry_points = self._flat_entry_points()
 
         def matches(entry_point):
@@ -220,10 +243,11 @@ class JsonBackend(BackendInterface):
             result &= self._match_pattern_list_regex(entry_point['name'], name_list)
             return result
 
-        return {k: v for k, v in entry_points.iteritems() if matches(v)}
+        return {k: v for k, v in six.iteritems(entry_points) if matches(v)}
 
     @staticmethod
     def _match_pattern_list_regex(name, pattern_list):
+        import re
         if not pattern_list:
             return True
         return any([re.match(pattern, name) for pattern in pattern_list])
@@ -247,15 +271,12 @@ class JsonBackend(BackendInterface):
         return dist_list
 
     def _flat_entry_points(self):
+        """Get a flat dict of entry points (keys) annotated with {name: .., group: .., dist: ..} (values)"""
         epflat = {}
-        for distribution, dist_dict in self.epmap.iteritems():
-            for group, group_dict in dist_dict.iteritems():
-                for ep_name, entry_point in group_dict.iteritems():
-                    epflat[entry_point] = {
-                        'name': ep_name,
-                        'group': group,
-                        'dist': distribution
-                    }
+        for distribution, dist_dict in six.iteritems(self.epmap):
+            for group, group_dict in six.iteritems(dist_dict):
+                for ep_name, entry_point in six.iteritems(group_dict):
+                    epflat[entry_point] = {'name': ep_name, 'group': group, 'dist': distribution}
         return epflat
 
 
@@ -264,7 +285,6 @@ def _listify(sequence_or_name):
     from collections import Sequence
     if sequence_or_name is None:
         return None
-    elif not isinstance(sequence_or_name, Sequence) or isinstance(
-            sequence_or_name, (str, unicode)):
+    elif not isinstance(sequence_or_name, Sequence) or isinstance(sequence_or_name, (str, unicode)):
         return [sequence_or_name]
     return sequence_or_name

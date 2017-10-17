@@ -11,8 +11,7 @@ def reentry():
 
 @reentry.command()
 @click.argument('groups', nargs=-1, metavar='PATTERN')
-@click.option(
-    '-r', '--regex', is_flag=True, help='Treat PATTERNs as regular expresions')
+@click.option('-r', '--regex', is_flag=True, help='Treat PATTERNs as regular expresions')
 def scan(groups, regex):
     """
     Scan for python entry points to cache for faster loading.
@@ -41,10 +40,7 @@ def map_(dist, group, name):
     import pprint
     from reentry import manager
     if dist is None:
-        res = {
-            d: manager.get_entry_map(d, group, name)
-            for d in manager.distribution_names
-        }
+        res = {d: manager.get_entry_map(d, group, name) for d in manager.distribution_names}
     else:
         res = manager.get_entry_map(dist, group, name)
     click.echo(pprint.pformat(res))

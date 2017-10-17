@@ -16,9 +16,9 @@ class BackendInterface(object):
         """
         get a map of entry points, filtered by
 
-        :param dist: distribution name
+        :param dist: distribution name or sequence of distribution names
         :param groups: single group name or sequence of group names
-        :param name: entry point name or sequence of names
+        :param name: entry point name pattern or sequence of name patterns
 
         The map is structured as follows::
 
@@ -66,8 +66,8 @@ class BackendInterface(object):
         take a distribution's project name, add the distribution
         """
         if entry_point_map:
-            self.write_dist_map(
-                distname=distname, entry_point_map=entry_point_map)
+            print distname, entry_point_map
+            self.write_dist_map(distname=distname, entry_point_map=entry_point_map)
         else:
             dist = self.pr_dist_from_name(distname)
             self.write_pr_dist(dist)
@@ -79,6 +79,9 @@ class BackendInterface(object):
         """
         removes a distribution completely
         """
+
+    def clear(self):
+        """Clears all stored entry points"""
 
     @staticmethod
     def pr_dist_map(dist):

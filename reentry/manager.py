@@ -31,8 +31,7 @@ class PluginManager(object):
 
         The backend may only load pkg_resources if any of the entry points contain extras requirements
         """
-        return self._backend.get_map(
-            dist=dist_names, group=groups, name=ep_names)
+        return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
 
     def register(self, distname):
         """
@@ -63,9 +62,10 @@ class PluginManager(object):
             elif group_re:
                 dmap = {k: v for k, v in emap.iteritems() if group_re.match(k)}
             else:
-                dmap = emap
+                dmap = None
             dname = dist.project_name
-            self._backend.write_dist_map(dname, dmap)
+            print dname, dmap
+            self._backend.write_dist(dname, entry_point_map=dmap)
 
     def unregister(self, distname):
         """

@@ -7,9 +7,7 @@ class EntryPoint(object):
     """
     Lightweight analogue for pkg_resources.EntryPoint
     """
-    pattern = re.compile(
-        r'\s*(?P<name>.+?)\s*=\s*(?P<module>[\w.]+)\s*(:\s*(?P<attr>[\w.]+))?\s*(?P<extras>\[.*\])?\s*$'
-    )
+    pattern = re.compile(r'\s*(?P<name>.+?)\s*=\s*(?P<module>[\w.]+)\s*(:\s*(?P<attr>[\w.]+))?\s*(?P<extras>\[.*\])?\s*$')
 
     def __init__(self, name, module_name, attrs=(), distname=None):
         self.name = name

@@ -18,8 +18,7 @@ def register_dist(dist, attr, value):
     from distutils.errors import DistutilsSetupError  # pylint: disable=import-error,no-name-in-module
     # assert is boolean
     if not is_bool(value):
-        raise DistutilsSetupError('{} must be a boolean, got {}'.format(
-            attr, value))
+        raise DistutilsSetupError('{} must be a boolean, got {}'.format(attr, value))
 
     if value:
         print('registering entry points with reentry...')
@@ -32,8 +31,7 @@ def ensure_list(value, attr):
     """raise an error if `value` is not a list"""
     from distutils.errors import DistutilsSetupError  # pylint: disable=import-error,no-name-in-module
     if not isinstance(value, list):
-        raise DistutilsSetupError('{} must be a list, got {}'.format(
-            attr, value.__class__))
+        raise DistutilsSetupError('{} must be a list, got {}'.format(attr, value.__class__))
 
 
 def scan_for_installed(attr, value):
