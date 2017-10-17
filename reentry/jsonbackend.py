@@ -285,6 +285,6 @@ def _listify(sequence_or_name):
     from collections import Sequence
     if sequence_or_name is None:
         return None
-    elif not isinstance(sequence_or_name, Sequence) or isinstance(sequence_or_name, (str, unicode)):
+    elif not isinstance(sequence_or_name, Sequence) or isinstance(sequence_or_name, six.string_types):
         return [sequence_or_name]
     return sequence_or_name
