@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/DropD/reentry.svg?branch=master
+    :target: https://travis-ci.org/DropD/reentry
+
 =======
 Reentry
 =======
