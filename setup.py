@@ -30,15 +30,5 @@ setup(
     ],
     install_requires={'setuptools >= 18.5', 'click', 'six'},
     extras_require={
-        'dev': [
-            'pre-commit',
-            'prospector',
-            'pylint',
-            'flake8',
-            'pytest',
-            'yapf',
-            'coverage',
-            'pytest-cov',
-            'tox'
-        ]
+        'dev': ['pre-commit', 'prospector', 'pylint', 'flake8', 'pytest', 'yapf', 'coverage', 'pytest-cov', 'tox']
     })
