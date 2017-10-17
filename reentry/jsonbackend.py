@@ -175,30 +175,21 @@ class JsonBackend(BackendInterface):
         import re
         from reentry.entrypoint import EntryPoint
         # sanitize dist kwarg
-        dist_list = _listify(dist)
-        if dist_list is None:
-            dist_list = self.get_dist_names()
+        dist_list = self._dist_list_from_arg(dist)
 
         # sanitize groups kwarg
-        group_list = _listify(group)
-        if group_list is None:
-            group_list = self.get_group_names()
-        # sanitize name kwarg
-        name = _listify(name)
+        group_list = self._group_list_from_arg(group)
 
+        # sanitize name kwarg
+        name_list = _listify(name)
+
+        filtered_entry_points = self._filter_entry_points(dist_list, group_list, name_list)
         entry_point_map = {}
-        for distribution in dist_list:
-            for group_name in self._filter_groups_by_distribution(
-                    distribution_list=[distribution], group_list=group_list):
-                group_map = {}
-                for ep_name, entry_point in self.epmap[distribution][
-                        group_name].iteritems():
-                    if not name or any([re.match(i, ep_name) for i in name]):
-                        group_map[ep_name] = EntryPoint.parse(entry_point)
-                if group_map:
-                    if group_name not in entry_point_map:
-                        entry_point_map[group_name] = {}
-                    entry_point_map[group_name].update(group_map)
+        for entry_point, ep_info in filtered_entry_points.iteritems():
+            if not ep_info['group'] in entry_point_map:
+                entry_point_map[ep_info['group']] = {}
+            entry_point_map[ep_info['group']][ep_info['name']] = EntryPoint.parse(entry_point)
+
         return entry_point_map
 
     def _filter_groups_by_distribution(self,
@@ -219,6 +210,53 @@ class JsonBackend(BackendInterface):
                     if group_name in group_list
                 ])
         return group_set
+
+    def _filter_entry_points(self, dist_list, group_list, name_list):
+        entry_points = self._flat_entry_points()
+
+        def matches(entry_point):
+            result = self._match_pattern_list_exact(entry_point['dist'], dist_list)
+            result &= self._match_pattern_list_exact(entry_point['group'], group_list)
+            result &= self._match_pattern_list_regex(entry_point['name'], name_list)
+            return result
+
+        return {k: v for k, v in entry_points.iteritems() if matches(v)}
+
+    @staticmethod
+    def _match_pattern_list_regex(name, pattern_list):
+        if not pattern_list:
+            return True
+        return any([re.match(pattern, name) for pattern in pattern_list])
+
+    @staticmethod
+    def _match_pattern_list_exact(name, pattern_list):
+        if not pattern_list:
+            return True
+        return bool(name in pattern_list)
+
+    def _group_list_from_arg(self, group_arg):
+        group_list = _listify(group_arg)
+        if group_list is None:
+            group_list = self.get_group_names()
+        return group_list
+
+    def _dist_list_from_arg(self, dist_arg):
+        dist_list = _listify(dist_arg)
+        if dist_list is None:
+            dist_list = self.get_dist_names()
+        return dist_list
+
+    def _flat_entry_points(self):
+        epflat = {}
+        for distribution, dist_dict in self.epmap.iteritems():
+            for group, group_dict in dist_dict.iteritems():
+                for ep_name, entry_point in group_dict.iteritems():
+                    epflat[entry_point] = {
+                        'name': ep_name,
+                        'group': group,
+                        'dist': distribution
+                    }
+        return epflat
 
 
 def _listify(sequence_or_name):
