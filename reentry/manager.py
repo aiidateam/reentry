@@ -1,5 +1,8 @@
 # -*- coding: utf8 -*-
 """Manager for entry point based plugins. Main client facing API"""
+
+import six
+
 from reentry.jsonbackend import JsonBackend
 
 DEFAULT_BACKEND = JsonBackend()
@@ -58,13 +61,12 @@ class PluginManager(object):
             dist = dists[0]
             emap = dist.get_entry_map()
             if groups:
-                dmap = {k: v for k, v in emap.iteritems() if k in groups}
+                dmap = {k: v for k, v in six.iteritems(emap) if k in groups}
             elif group_re:
-                dmap = {k: v for k, v in emap.iteritems() if group_re.match(k)}
+                dmap = {k: v for k, v in six.iteritems(emap) if group_re.match(k)}
             else:
                 dmap = None
             dname = dist.project_name
-            print dname, dmap
             self._backend.write_dist(dname, entry_point_map=dmap)
 
     def unregister(self, distname):

@@ -66,7 +66,6 @@ class BackendInterface(object):
         take a distribution's project name, add the distribution
         """
         if entry_point_map:
-            print distname, entry_point_map
             self.write_dist_map(distname=distname, entry_point_map=entry_point_map)
         else:
             dist = self.pr_dist_from_name(distname)
