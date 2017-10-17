@@ -64,7 +64,6 @@ class PluginManager(object):
             else:
                 dmap = None
             dname = dist.project_name
-            print dname, dmap
             self._backend.write_dist(dname, entry_point_map=dmap)
 
     def unregister(self, distname):
