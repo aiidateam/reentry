@@ -1,8 +1,11 @@
 language: python
-python: 2.7
+python: 
+ - 2.7
+ - 3.6
 cache: pip
 install:
     - pip install -e .[dev]
+    - pip install tox-travis
 env:
     - TEST_TYPE="pre-commit"
     - TEST_TYPE="unittests"
