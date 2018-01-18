@@ -11,7 +11,7 @@ with open(README_PATH, 'r') as readme:
 
 setup(
     name='reentry',
-    version='1.0.2',
+    version='1.0.3',
     author='Rico Häuselmann',
     license='MIT License',
     description='A plugin manager based on setuptools entry points mechanism',
@@ -25,8 +25,9 @@ setup(
         'test_entry_points': ['test = reentry.cli:reentry']
     },
     classifiers=[
-        'License :: OSI Approved :: MIT License', 'Programming Language :: Python', 'Development Status :: 5 - Production/Stable',
-        'Environment :: Plugins', 'Intended Audience :: Developers', 'Topic :: Software Development'
+        'License :: OSI Approved :: MIT License', 'Programming Language :: Python :: 2', 'Programming Language :: Python :: 3',
+        'Development Status :: 5 - Production/Stable', 'Environment :: Plugins', 'Intended Audience :: Developers',
+        'Topic :: Software Development'
     ],
     install_requires={'setuptools >= 18.5', 'click', 'six'},
     extras_require={
