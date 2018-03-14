@@ -80,7 +80,7 @@ class JsonBackend(BackendInterface):
         from reentry.entrypoint import EntryPoint
         for dist in self.epmap:
             for _, entry_point_spec in six.iteritems(self.epmap[dist].get(group, {})):
-                yield EntryPoint.parse(entry_point_spec)
+                yield EntryPoint.parse(entry_point_spec, group=group)
 
     def get_pr_dist_map(self, dist):
         return self.get_dist_map(dist.project_name)
@@ -93,7 +93,7 @@ class JsonBackend(BackendInterface):
         dmap = self.epmap.get(dist, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
-                dmap[gname][epname] = EntryPoint.parse(dmap[gname][epname])
+                dmap[gname][epname] = EntryPoint.parse(dmap[gname][epname], group=gname)
         return dmap
 
     def get_ep(self, group, name, dist=None):
@@ -124,7 +124,7 @@ class JsonBackend(BackendInterface):
             group_map = distribution_map.get(group, {})
             spec = group_map.get(name)
             if spec:
-                return EntryPoint.parse(spec)
+                return EntryPoint.parse(spec, group=group)
 
     def get_dist_names(self):
         """
@@ -184,7 +184,7 @@ class JsonBackend(BackendInterface):
         for entry_point, ep_info in six.iteritems(filtered_entry_points):
             if not ep_info['group'] in entry_point_map:
                 entry_point_map[ep_info['group']] = {}
-            entry_point_map[ep_info['group']][ep_info['name']] = EntryPoint.parse(entry_point)
+            entry_point_map[ep_info['group']][ep_info['name']] = EntryPoint.parse(entry_point, group=ep_info['group'])
 
         return entry_point_map
 
