@@ -9,14 +9,15 @@ class EntryPoint(object):
     """
     pattern = re.compile(r'\s*(?P<name>.+?)\s*=\s*(?P<module>[\w.]+)\s*(:\s*(?P<attr>[\w.]+))?\s*(?P<extras>\[.*\])?\s*$')
 
-    def __init__(self, name, module_name, attrs=(), distname=None):
+    def __init__(self, name, module_name, attrs=(), distname=None, group=None):
         self.name = name
         self.module_name = module_name
         self.attrs = attrs
         self.distname = distname
+        self.group = group
 
     @classmethod
-    def parse(cls, src, distname=None):
+    def parse(cls, src, distname=None, group=None):
         """
         pasted from pkg_resources, fall back on their EntryPoints when extras are required
         """
@@ -27,7 +28,7 @@ class EntryPoint(object):
             dist = pr.get_distribution(distname) if distname else None
             return pr.EntryPoint.parse(src, dist=dist)
         attrs = res['attr'].split('.') if res['attr'] else ()
-        return cls(res['name'], res['module'], attrs, distname)
+        return cls(res['name'], res['module'], attrs, distname, group)
 
     def load(self):
         """
