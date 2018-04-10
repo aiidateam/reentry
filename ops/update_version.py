@@ -65,6 +65,7 @@ class VersionUpdater(object):
 
     @property
     def setup_version(self):
+        """Grab the parsed version from the setup file."""
         match = re.search(self.setup_version_pat, self.setup_py.read())
         if not match:
             raise AttributeError('No global variable VERSION found in setup.py')
@@ -72,6 +73,7 @@ class VersionUpdater(object):
 
     @property
     def init_version(self):
+        """Grab the parsed version from the init file."""
         match = re.search(self.init_version_pat, self.top_level_init.read())
         if not match:
             raise AttributeError('No __version__ found in top-level __init__.py')
