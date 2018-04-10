@@ -3,8 +3,9 @@
 import six
 
 from reentry.jsonbackend import JsonBackend
+from reentry.config import get_datafile
 
-DEFAULT_BACKEND = JsonBackend()
+DEFAULT_BACKEND = JsonBackend(datafile=get_datafile())
 
 
 class PluginManager(object):
