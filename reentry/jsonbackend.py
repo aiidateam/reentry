@@ -1,10 +1,11 @@
 # -*- coding: utf8 -*-
-"""A backend that uses a json file to store entry points"""
+"""A backend that uses a json file to store entry points."""
 import json
 
 import six
 
 from reentry.abcbackend import BackendInterface
+from reentry.entrypoint import EntryPoint
 
 
 class JsonBackend(BackendInterface):
@@ -40,7 +41,8 @@ class JsonBackend(BackendInterface):
         """
         add a distribution, empty by default
         """
-        dname, epmap = self.pr_dist_map(dist)
+        dname = dist.project_name
+        epmap = dist.get_entry_map()
         self.write_dist_map(dname, epmap)
 
     def write_dist_map(self, distname, entry_point_map=None):
@@ -63,21 +65,22 @@ class JsonBackend(BackendInterface):
             self.write()
 
     def write_st_dist(self, dist):
-        """
-        add a distribution during it's install
-        """
-        dname = dist.get_name()
-        epmap = dist.entry_points.copy()
-        for group in epmap:
-            elist = epmap[group]
-            epmap[group] = {i.split(' = ', 1)[0]: i for i in elist}
-        self.write_dist_map(dname, epmap)
+        """Add a distribution by name."""
+        self.write_pr_dist(self.pr_dist_from_name(dist))
+
+    def write_install_dist(self, dist):
+        """Add a distribution during it's install."""
+        distname = dist.get_name()
+        entrypoint_map = {}
+        for group, entrypoint_list in dist.entry_points.items():
+            entrypoint_map[group] = {}
+            for entrypoint_string in entrypoint_list:
+                entry_point = EntryPoint.parse(entrypoint_string)
+                entrypoint_map[group][entry_point.name] = entrypoint_string
+        self.write_dist_map(distname, entrypoint_map)
 
     def iter_group(self, group):
-        """
-        iterate over entry points within a given group
-        """
-        from reentry.entrypoint import EntryPoint
+        """Iterate over entry points within a given group."""
         for dist in self.epmap:
             for _, entry_point_spec in six.iteritems(self.epmap[dist].get(group, {})):
                 yield EntryPoint.parse(entry_point_spec)
@@ -86,10 +89,7 @@ class JsonBackend(BackendInterface):
         return self.get_dist_map(dist.project_name)
 
     def get_dist_map(self, dist):
-        """
-        Return the entry map of a given distribution
-        """
-        from reentry.entrypoint import EntryPoint
+        """Return the entry map of a given distribution."""
         dmap = self.epmap.get(dist, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
@@ -98,7 +98,7 @@ class JsonBackend(BackendInterface):
 
     def get_ep(self, group, name, dist=None):
         """
-        Get an entry point
+        Get an entry point.
 
         :param group: the group name
         :param name: the entry point name
@@ -108,7 +108,6 @@ class JsonBackend(BackendInterface):
         entry point with the same name, returns a list of entrypoints
         else, returns an entry point
         """
-        from reentry.entrypoint import EntryPoint
         if not dist:
             specs = []
             for dist_name in self.epmap.keys():
@@ -125,6 +124,7 @@ class JsonBackend(BackendInterface):
             spec = group_map.get(name)
             if spec:
                 return EntryPoint.parse(spec)
+        return None
 
     def get_dist_names(self):
         """
@@ -166,10 +166,7 @@ class JsonBackend(BackendInterface):
         self.write()
 
     def get_map(self, dist=None, group=None, name=None):
-        """
-        see BackendInterface docs
-        """
-        from reentry.entrypoint import EntryPoint
+        """See BackendInterface docs."""
         # sanitize dist kwarg
         dist_list = self._dist_list_from_arg(dist)
 
@@ -238,6 +235,7 @@ class JsonBackend(BackendInterface):
         entry_points = self._flat_entry_points()
 
         def matches(entry_point):
+            """True if the pattern matches."""
             result = self._match_pattern_list_exact(entry_point['dist'], dist_list)
             result &= self._match_pattern_list_exact(entry_point['group'], group_list)
             result &= self._match_pattern_list_regex(entry_point['name'], name_list)

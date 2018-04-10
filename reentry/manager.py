@@ -1,9 +1,12 @@
 # -*- coding: utf8 -*-
 """Manager for entry point based plugins. Main client facing API"""
+from __future__ import print_function
 import six
 
 from reentry.jsonbackend import JsonBackend
 from reentry.config import get_datafile
+
+__all__ = ['PluginManager', 'DEFAULT_BACKEND', 'DEFAULT_MANAGER']
 
 DEFAULT_BACKEND = JsonBackend(datafile=get_datafile())
 
@@ -36,13 +39,18 @@ class PluginManager(object):
         """
         return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
 
-    def register(self, distname):
+    def register(self, distribution):
         """
-        registers the distribution's entry points with the backend
+        Registers the distribution's entry points with the backend.
 
         The backend may load pkg_resources to resolve the distribution name
+
+        Takes either a string or a Distribution object as passed by setuptools to hooks during install.
         """
-        self._backend.write_dist(distname)
+        if isinstance(distribution, six.string_types):
+            self._backend.write_st_dist(distribution)
+        else:
+            self._backend.write_install_dist(distribution)
 
     def scan(self, groups=None, group_re=None):
         """
@@ -59,15 +67,15 @@ class PluginManager(object):
 
         for dists in pr_env._distmap.values():  # pylint: disable=protected-access
             dist = dists[0]
-            emap = dist.get_entry_map()
+            emap = dist.get_entry_map() or {}
             if groups:
                 dmap = {k: v for k, v in six.iteritems(emap) if k in groups}
             elif group_re:
                 dmap = {k: v for k, v in six.iteritems(emap) if group_re.match(k)}
             else:
-                dmap = None
+                dmap = emap
             dname = dist.project_name
-            self._backend.write_dist(dname, entry_point_map=dmap)
+            self._backend.write_dist_map(dname, entry_point_map=dmap)
 
     def unregister(self, distname):
         """

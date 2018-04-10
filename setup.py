@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     package_data={'': ['js_data', 'README.rst']},
     entry_points={
-        'distutils.setup_keywords': ['reentry_register = reentry.hooks:register_dist', 'reentry_scan = reentry.hooks:scan'],
+        'distutils.setup_keywords': ['reentry_register = reentry.hooks:register_dist', 'reentry_scan = reentry.hooks:scan_for_installed'],
         'console_scripts': ['reentry = reentry.cli:reentry'],
         'test_entry_points': ['test = reentry.cli:reentry']
     },
