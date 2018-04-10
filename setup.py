@@ -9,9 +9,11 @@ README_PATH = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
 with open(README_PATH, 'r') as readme:
     LONG_DESCRIPTION = readme.read()
 
+VERSION = '1.0.3'
+
 setup(
     name='reentry',
-    version='1.0.3',
+    version=VERSION,
     author='Rico Häuselmann',
     license='MIT License',
     description='A plugin manager based on setuptools entry points mechanism',
@@ -31,5 +33,5 @@ setup(
     ],
     install_requires=['setuptools >= 18.5', 'click', 'six'],
     extras_require={
-        'dev': ['pre-commit', 'prospector', 'pylint', 'flake8', 'pytest', 'yapf', 'coverage', 'pytest-cov', 'tox']
+        'dev': ['pre-commit', 'prospector', 'pylint', 'flake8', 'pytest', 'yapf', 'coverage', 'pytest-cov', 'tox', 'packaging']
     })
