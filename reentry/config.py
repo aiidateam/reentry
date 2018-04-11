@@ -1,6 +1,9 @@
 """Find and read user settings."""
 import os
-from configparser import ConfigParser
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 from py import path as py_path  # pylint: disable=no-name-in-module
 
