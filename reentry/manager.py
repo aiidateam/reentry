@@ -54,19 +54,21 @@ class PluginManager(object):
         else:
             self._backend.write_install_dist(distribution)
 
-    def scan(self, groups=None, group_re=None):
+    def scan(self, groups=None, group_re=None, nocommit=False):
         """
         walks through all distributions available and registers entry points or only those in `groups`
         """
         import pkg_resources as pr
         pr_env = pr.AvailableDistributions()
         pr_env.scan()
-        if groups:
-            for group in groups:
-                self._backend.rm_group(group)
-        else:
-            self._backend.clear()
+        if not nocommit:
+            if groups:
+                for group in groups:
+                    self._backend.rm_group(group)
+            else:
+                self._backend.clear()
 
+        full_map = {}
         for dists in pr_env._distmap.values():  # pylint: disable=protected-access
             dist = dists[0]
             emap = dist.get_entry_map() or {}
@@ -77,7 +79,11 @@ class PluginManager(object):
             else:
                 dmap = emap
             dname = dist.project_name
-            self._backend.write_dist_map(dname, entry_point_map=dmap)
+            if not nocommit:
+                self._backend.write_dist_map(dname, entry_point_map=dmap)
+            full_map[dname] = [dmap]
+
+        return full_map
 
     def unregister(self, distname):
         """
