@@ -5,6 +5,8 @@ case "$TEST_TYPE" in
         ;;
     pre-commit)
         pre-commit run --all-files
+        git diff
+        pip freeze | grep yapf
         ;;
     *)
         echo "Invalid value for TEST_TYPE env variable."
