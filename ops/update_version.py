@@ -84,7 +84,7 @@ class VersionUpdater(object):
         """Get the current version number from ``git describe``, fall back to setup.py."""
         try:
             describe_byte_string = subprocess.check_output(['git', 'describe', '--tags', '--match', 'v*.*.*'])
-            version_string = re.findall(self.version_pat, describe_byte_string)[0]
+            version_string = re.findall(self.version_pat, describe_byte_string.decode(encoding='UTF-8'))[0]
         except subprocess.CalledProcessError:
             with open(self.setup_py, 'r') as setup_fo:
                 setup = json.load(setup_fo)
