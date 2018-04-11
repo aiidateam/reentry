@@ -7,6 +7,48 @@ Reentry
 
 A plugin manager based on setuptools entry points with 10x the speed
 
+Quickstart
+----------
+
+Use the following in your plugins's ``setup.py``::
+
+   setup(
+      ...
+      setup_requires=['reentry'],
+      reentry_register=True,
+      entry_points={
+         'my_plugins': ['this_plugin = this_package.subpackage:member'],
+         ...
+      }
+
+And iterate over installed plugin from the host package::
+
+   from reentry import manager
+   available_plugins = manager.iter_entry_points(group='my_plugins')
+   for plugin in available_plugins:
+      plugin_object = plugin.load()
+      plugin_object.use()
+
+Note that the syntax is consistent with ``setuptools``'s ``pkg_resources``, so you may use it as a fallback::
+
+   try:
+      from reentry import manager as entry_pt_manager
+   except:
+      import pkg_resources as entry_pt_manager
+
+   entry_pt_manager.iter_entry_points(...)
+   ...
+
+If your host package should search for entrypoints that were not installed using ``reentry_register``::
+
+   # in host's setup.py
+   setup(
+      ...
+      reentry_scan=['my_plugins', 'other_type_of_plugins']
+      ...
+   )
+
+
 What for?
 ---------
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - configuration key: datadir, defaults to ~/.config/reentry/data/
  - entry points are now stored in a file in ~/.config/reentry/data/, named individually per installation
  - setup-hook `reentry_register` is now working and tested on Travis-CI
+ - `reentry_register` now checks and does nothing if distribution has no entry points
  - setup-hook `reentry_scan` is now working and tested on Travis-CI
 
 ### Changed

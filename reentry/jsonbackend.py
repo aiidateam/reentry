@@ -72,7 +72,10 @@ class JsonBackend(BackendInterface):
         """Add a distribution during it's install."""
         distname = dist.get_name()
         entrypoint_map = {}
-        for group, entrypoint_list in dist.entry_points.items():
+        dist_map = {}
+        if hasattr(dist, 'entry_points'):
+            dist_map = dist.entry_points or {}
+        for group, entrypoint_list in dist_map.items():
             entrypoint_map[group] = {}
             for entrypoint_string in entrypoint_list:
                 entry_point = EntryPoint.parse(entrypoint_string)
