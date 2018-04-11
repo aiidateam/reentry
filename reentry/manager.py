@@ -4,17 +4,19 @@ from __future__ import print_function
 import six
 
 from reentry.jsonbackend import JsonBackend
-from reentry.config import get_datafile
 
-__all__ = ['PluginManager', 'DEFAULT_BACKEND', 'DEFAULT_MANAGER']
+__all__ = ['PluginManager', 'get_default_backend', 'DEFAULT_MANAGER']
 
-DEFAULT_BACKEND = JsonBackend(datafile=get_datafile())
+
+def get_default_backend():
+    from reentry.config import get_datafile
+    return JsonBackend(datafile=get_datafile())
 
 
 class PluginManager(object):
     """Manage a set of cached entry points"""
 
-    def __init__(self, backend=DEFAULT_BACKEND):
+    def __init__(self, backend=get_default_backend()):
         self._backend = backend
 
     def iter_entry_points(self, group, name=None):

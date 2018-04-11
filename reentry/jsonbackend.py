@@ -235,7 +235,7 @@ class JsonBackend(BackendInterface):
         entry_points = self._flat_entry_points()
 
         def matches(entry_point):
-            """True if the pattern matches."""
+            """True if the entry point matches the filters."""
             result = self._match_pattern_list_exact(entry_point['dist'], dist_list)
             result &= self._match_pattern_list_exact(entry_point['group'], group_list)
             result &= self._match_pattern_list_regex(entry_point['name'], name_list)
@@ -245,6 +245,7 @@ class JsonBackend(BackendInterface):
 
     @staticmethod
     def _match_pattern_list_regex(name, pattern_list):
+        """True if the entry point name matches one of a list of regex patterns."""
         import re
         if not pattern_list:
             return True

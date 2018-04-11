@@ -3,7 +3,8 @@ import os
 from configparser import ConfigParser
 
 from py import path as py_path  # pylint: disable=no-name-in-module
-from reentry import __path__ as reentry_path
+
+__all__ = ['find_config', 'get_config', 'get_datafile']
 
 
 def find_config():
@@ -35,7 +36,7 @@ def get_datafile():
     """Create the path to the data file used to store entry points."""
     config = get_config()
     sep = os.path.sep
-    pkg_path_filename = py_path.local(reentry_path[0]).strpath.lstrip(sep).replace(sep, '.')
+    pkg_path_filename = py_path.local(__file__).dirname.lstrip(sep).replace(sep, '.')
     datafile = py_path.local(config.get('general', 'datadir')).join(pkg_path_filename)
     datafile.ensure()
     if not datafile.read():
