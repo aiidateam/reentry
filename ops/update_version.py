@@ -1,4 +1,5 @@
 """Update version numbers everywhere based on git tags."""
+from __future__ import print_function
 import os
 import re
 import json
@@ -57,7 +58,8 @@ class VersionUpdater(object):
     def write_to_setup(self):
         """Write the updated version number to the setup file."""
         setup_content = self.setup_py.read()
-        self.setup_py.write(re.sub(self.setup_version_pat, self.new_version_str, setup_content, re.DOTALL | re.MULTILINE))
+        new_content = re.sub(self.setup_version_pat, self.new_version_str, setup_content, re.DOTALL | re.MULTILINE)
+        self.setup_py.write(new_content)
 
     @property
     def new_version_str(self):

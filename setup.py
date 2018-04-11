@@ -9,12 +9,12 @@ README_PATH = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
 with open(README_PATH, 'r') as readme:
     LONG_DESCRIPTION = readme.read()
 
-VERSION = '1.0.3'
+VERSION = '1.1.0'
 
 setup(
     name='reentry',
     version=VERSION,
-    author='Rico Häuselmann',
+    author='Rico Haeuselmann',
     license='MIT License',
     description='A plugin manager based on setuptools entry points mechanism',
     long_description=LONG_DESCRIPTION,
