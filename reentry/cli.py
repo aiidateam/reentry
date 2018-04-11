@@ -44,3 +44,9 @@ def map_(dist, group, name):
     else:
         res = manager.get_entry_map(dist, group, name)
     click.echo(pprint.pformat(res))
+
+
+@reentry.command('datafile')
+def datafile():
+    from reentry.config import get_datafile
+    click.echo(get_datafile())

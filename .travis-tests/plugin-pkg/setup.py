@@ -7,6 +7,4 @@ if __name__ == '__main__':
         packages=find_packages(),
         install_requires=['reentry'],
         reentry_register=True,
-        entry_points={
-            'reentry_test': ['test-plugin = reentry_test_plugin.plugin:PluginClass']
-        })
+        entry_points={'reentry_test': ['test-plugin = reentry_test_plugin.plugin:PluginClass']})
