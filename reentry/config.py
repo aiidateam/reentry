@@ -1,8 +1,8 @@
 """Find and read user settings."""
 import os
+
 import six
 from six.moves import configparser
-
 from py import path as py_path  # pylint: disable=no-name-in-module
 
 __all__ = ['find_config', 'get_config', 'get_datafile']
@@ -25,22 +25,21 @@ def find_config():
     return rc_file
 
 
-def config_parser_cls():
+def make_config_parser(*args, **kwargs):
     """Get the correct ConfigParser class depending on python version."""
     if six.PY2:
-        return configparser.SafeConfigParser
+        return configparser.SafeConfigParser(*args, **kwargs)
     elif six.PY3:
-        return configparser.ConfigParser
+        return configparser.ConfigParser(*args, **kwargs)
     return None
 
 
-def get_config(config_file_name=find_config()):
+def get_config(config_file_name=find_config().strpath):
     """Create config parser with defaults and read in the config file."""
     default_config_dir = py_path.local(os.path.expanduser('~/.config/reentry'))
-    parser_cls = config_parser_cls()
-    parser = parser_cls({'datadir': default_config_dir.join('data').strpath})
+    parser = make_config_parser({'datadir': default_config_dir.join('data').strpath})
     parser.add_section('general')
-    parser.read([config_file_name.strpath])
+    parser.read([config_file_name])
     return parser
 
 
