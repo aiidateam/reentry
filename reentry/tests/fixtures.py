@@ -16,20 +16,20 @@ def test_data():
     with open(TEST_DATA_FILE, 'r') as test_data_file_obj:
         test_data = test_data_file_obj.read()
 
-    hd, test_file = tempfile.mkstemp()
+    file_handle, test_file = tempfile.mkstemp()
     with open(test_file, 'w') as test_file_obj:
         test_file_obj.write(test_data)
 
     yield test_file
 
-    os.close(hd)
+    os.close(file_handle)
     os.remove(test_file)
 
 
 @pytest.fixture
 def bkend(test_data):
     """create a backend with test data"""
-    from ..jsonbackend import JsonBackend
+    from reentry.jsonbackend import JsonBackend
     test_file = test_data
     return JsonBackend(datafile=test_file)
 
