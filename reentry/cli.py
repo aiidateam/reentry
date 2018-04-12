@@ -58,13 +58,19 @@ def dev():
     """Development related commands."""
 
 
+def echo_call(cmd):
+    click.echo('calling: {}'.format(' '.join(cmd)))
+
+
 @dev.command()
 def coveralls():
     """Run coveralls only on travis."""
     import os
     import subprocess
     if os.getenv('TRAVIS'):
-        subprocess.call(['coveralls'])
+        cmd = ['coveralls']
+        echo_call(cmd)
+        subprocess.call(cmd)
 
 
 @dev.command()
@@ -78,4 +84,6 @@ def test(envsitepackagesdir):
     if os.getenv('TRAVIS'):
         prefix = envsitepackagesdir + '/'
     pkg_dir = pkg_dir_tpl.format(prefix)
-    subprocess.call(['pytest', '--cov-report=term-missing', '--cov={}'.format(pkg_dir)])
+    cmd = ['pytest', '--cov-report=term-missing', '--cov={}'.format(pkg_dir)]
+    echo_call(cmd)
+    subprocess.call(cmd)
