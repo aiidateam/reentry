@@ -48,5 +48,34 @@ def map_(dist, group, name):
 
 @reentry.command('datafile')
 def datafile():
+    """Print the path to the current datafile."""
     from reentry.config import get_datafile
     click.echo(get_datafile())
+
+
+@reentry.group('dev')
+def dev():
+    """Development related commands."""
+
+
+@dev.command()
+def coveralls():
+    """Run coveralls only on travis."""
+    import os
+    import subprocess
+    if os.getenv('TRAVIS'):
+        subprocess.call(['coveralls'])
+
+
+@dev.command()
+@click.argument('envsitepackagesdir')
+def test(envsitepackagesdir):
+    """Run tests with options depending on whether on travis or not."""
+    import os
+    import subprocess
+    pkg_dir_tpl = '{}reentry'
+    prefix = ''
+    if os.getenv('TRAVIS'):
+        prefix = envsitepackagesdir + '/'
+    pkg_dir = pkg_dir_tpl.format(prefix)
+    subprocess.call(['pytest', '--cov-report=term-missing', '--cov={}'.format(pkg_dir)])
