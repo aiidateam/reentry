@@ -16,7 +16,7 @@ def test_data():
     with open(TEST_DATA_FILE, 'r') as test_data_file_obj:
         test_data = test_data_file_obj.read()
 
-    _, test_file = tempfile.mkstemp()
+    _, test_file = tempfile.mkstemp()  # pylint: disable=invalid-name
     with open(test_file, 'w') as test_file_obj:
         test_file_obj.write(test_data)
 
@@ -28,7 +28,7 @@ def test_data():
 @pytest.fixture
 def bkend(test_data):
     """create a backend with test data"""
-    from ..jsonbackend import JsonBackend
+    from reentry.jsonbackend import JsonBackend
     test_file = test_data
     return JsonBackend(datafile=test_file)
 
