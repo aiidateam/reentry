@@ -59,7 +59,7 @@ def dev():
 
 
 def echo_call(cmd):
-    click.echo('calling: {}'.format(' '.join(cmd)))
+    click.echo('calling: {}'.format(' '.join(cmd)), err=True)
 
 
 @dev.command()
