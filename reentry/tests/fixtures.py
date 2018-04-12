@@ -16,12 +16,13 @@ def test_data():
     with open(TEST_DATA_FILE, 'r') as test_data_file_obj:
         test_data = test_data_file_obj.read()
 
-    _, test_file = tempfile.mkstemp()
+    hd, test_file = tempfile.mkstemp()
     with open(test_file, 'w') as test_file_obj:
         test_file_obj.write(test_data)
 
     yield test_file
 
+    os.close(hd)
     os.remove(test_file)
 
 
