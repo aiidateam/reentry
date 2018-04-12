@@ -6,7 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+ - setup coveralls
+ - added coverage badge to REAME
+ - cli: `reentry dev coveralls` runs coveralls only if TRAVIS env variable is set
+
 ## [0.1.2]
+
+### Changed
  - fixed a bug that prevented from installing on windows
 
 ## [0.1.1]

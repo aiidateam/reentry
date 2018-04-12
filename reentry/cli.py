@@ -71,19 +71,3 @@ def coveralls():
         cmd = ['coveralls']
         echo_call(cmd)
         subprocess.call(cmd)
-
-
-@dev.command()
-@click.argument('envsitepackagesdir')
-def test(envsitepackagesdir):
-    """Run tests with options depending on whether on travis or not."""
-    import os
-    import subprocess
-    pkg_dir_tpl = '{}reentry'
-    prefix = ''
-    if os.getenv('TRAVIS'):
-        prefix = envsitepackagesdir + '/'
-    pkg_dir = pkg_dir_tpl.format(prefix)
-    cmd = ['pytest', '--cov-report=term-missing', '--cov={}'.format(pkg_dir)]
-    echo_call(cmd)
-    subprocess.call(cmd)
