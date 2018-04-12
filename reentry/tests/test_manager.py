@@ -2,7 +2,7 @@
 """Unit tests for manager functions"""
 import pytest
 
-from reentry.tests.fixtures import test_data, bkend, manager
+from fixtures import test_data, bkend, manager
 
 
 def test_get_entry_map(manager):

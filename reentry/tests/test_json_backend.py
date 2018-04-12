@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from reentry.tests.fixtures import test_data, bkend
+from fixtures import test_data, bkend
 from reentry.entrypoint import EntryPoint
 
 
