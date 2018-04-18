@@ -9,7 +9,7 @@ README_PATH = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
 with open(README_PATH, 'r') as readme:
     LONG_DESCRIPTION = readme.read()
 
-VERSION = '1.2.0a7'
+VERSION = '1.2.0a8'
 
 setup(
     name='reentry',

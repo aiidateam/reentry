@@ -6,8 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## [1.2.0-alpha.1]
-
 ### Added
  - CI test for registering entry points from the plugin host
 
@@ -18,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - setup coveralls
  - added coverage badge to REAME
  - cli: `reentry dev coveralls` runs coveralls only if TRAVIS env variable is set
+ - read data dir from REENTRY_DATADIR env variable (env > rcfile > default)
 
 ## [1.1.2]
 

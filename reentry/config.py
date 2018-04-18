@@ -41,6 +41,14 @@ def get_config(config_file_name=find_config().strpath):
     parser = make_config_parser({'datadir': default_config_dir.join('data').strpath})
     parser.add_section('general')
     parser.read([config_file_name])
+
+    env_datadir = os.getenv('REENTRY_DATADIR')
+    if env_datadir:
+        env_datadir_path = py_path.local(env_datadir)
+        if env_datadir_path.exists() and not env_datadir_path.isdir():
+            raise ValueError('environment variable $REENTRY_DATADIR={} exists, but is not a directory'.format(env_datadir.strpath))
+        parser.set('general', 'datadir', env_datadir_path.strpath)
+
     return parser
 
 

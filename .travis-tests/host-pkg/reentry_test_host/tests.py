@@ -1,12 +1,16 @@
 """Test main for integration test, requires the test plugin to be installed first."""
 from __future__ import print_function
+
+import click
 from py import path as py_path  # pylint: disable=no-name-in-module
 
 from reentry import manager
 from reentry.config import get_datafile
 
 
-def main():
+@click.command()
+@click.option('--with-noreg', is_flag=True)
+def main(with_noreg):
     """Test automatic scanning / registering"""
     entry_point_map = manager.get_entry_map(groups='reentry_test', ep_names=['test-plugin', 'test-noreg', 'builtin'])
     data_file = py_path.local(get_datafile())
@@ -16,8 +20,9 @@ def main():
 
     try:
         test_entry_point = entry_point_map['reentry_test']['test-plugin']
-        noreg_entry_point = entry_point_map['reentry_test']['test-noreg']
         builtin_entry_point = entry_point_map['reentry_test']['builtin']
+        if with_noreg:
+            noreg_entry_point = entry_point_map['reentry_test']['test-noreg']
     except Exception as err:
         print('datafile: {}'.format(data_file.strpath))
         print('\nCurrent relevant entry point map:\n\n')
@@ -33,10 +38,12 @@ def main():
     builtin_class = builtin_entry_point.load()
 
     assert plugin_class.test_string == 'TEST', 'The test string was incorrect'
-    assert noreg_class.test_string == 'TEST', 'The test string was incorrect'
     assert builtin_class.test_string == 'TEST', 'The test string was incorrect'
+    if with_noreg:
+        assert noreg_class.test_string == 'TEST', 'The test string was incorrect'
 
     plugin_list = [ep.load() for ep in manager.iter_entry_points('reentry_test')]
     assert plugin_class in plugin_list, 'iter_entry_points found differing test entry point from get_entry_map.'
-    assert noreg_class in plugin_list, 'iter_entry_points found differing test entry point from get_entry_map.'
     assert builtin_class in plugin_list, 'iter_entry_points found differing test entry point from get_entry_map.'
+    if with_noreg:
+        assert noreg_class in plugin_list, 'iter_entry_points found differing test entry point from get_entry_map.'
