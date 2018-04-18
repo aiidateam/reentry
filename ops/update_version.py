@@ -40,7 +40,7 @@ class VersionUpdater(object):
     any reason, from setup.json. The current version number is decided on init, syncronization can be executed by calling ``.sync()``.
     """
 
-    version_pat = re.compile(r'\d+.\d+.\d+')
+    version_pat = re.compile(r'\d+.\d+.\d+(-(alpha|beta|rc)(.\d+){0,3}){0,1}')
     init_version_pat = re.compile(r'(__version__ = )([\'"])(.*?)([\'"])', re.DOTALL | re.MULTILINE)
     setup_version_pat = re.compile(r'(VERSION = )([\'"])(.*?)([\'"])', re.DOTALL | re.MULTILINE)
     replace_tmpl = r'\1\g<2>{}\4'
@@ -86,7 +86,8 @@ class VersionUpdater(object):
         """Get the current version number from ``git describe``, fall back to setup.py."""
         try:
             describe_byte_string = subprocess.check_output(['git', 'describe', '--tags', '--match', 'v*.*.*'])
-            version_string = re.findall(self.version_pat, describe_byte_string.decode(encoding='UTF-8'))[0]
+            match = re.search(self.version_pat, describe_byte_string.decode(encoding='UTF-8'))
+            version_string = match.string[match.pos:match.end()]
         except subprocess.CalledProcessError:
             with open(self.setup_py, 'r') as setup_fo:
                 setup = json.load(setup_fo)

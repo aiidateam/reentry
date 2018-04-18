@@ -20,7 +20,6 @@ Plugin usage::
     )
 """
 from __future__ import print_function
-import sys
 from logging import getLogger
 
 from reentry.config import get_datafile
@@ -44,8 +43,11 @@ def register_dist(dist, attr, value):
         logger.warning('registering entry points with reentry...')
         from reentry import manager
         # ~ print('\n'.join(['{} = {}'.format(k, v) for k, v in dist.__dict__.items()]))
-        manager.register(dist)
+        dist_name, entry_point_map = manager.register(dist)
         logger.warning('registered to %s', get_datafile())
+        logger.info('Following entrypoints were registered\n %s', get_datafile())
+
+        logger.info(manager.format_map({dist_name: entry_point_map}))
 
 
 def ensure_list(value, attr):
@@ -62,9 +64,12 @@ def scan_for_installed(dist, attr, value):  # pylint: disable=unused-argument
 
     :param value: a list of groups names to scan for
     """
+    logger = getLogger('pip')
     ensure_list(value, attr)
     if value:
-        print('scanning for plugins...', file=sys.stderr)
+        logger.warning('scanning for plugins...')
         from reentry import manager
         manager.scan(groups=value, group_re=False)
-        print('... done.', file=sys.stderr)
+        logger.warning('... plugin scanning done.')
+        logger.info('Current entry point map at %s:', get_datafile())
+        logger.info(manager.format_map(manager.get_entry_map()))

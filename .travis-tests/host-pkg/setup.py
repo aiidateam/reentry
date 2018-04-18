@@ -5,8 +5,8 @@ if __name__ == '__main__':
     setup(
         name='reentry-test-host',
         packages=find_packages(),
-        setup_requires=['reentry'],
-        install_requires=['reentry'],
+        setup_requires=['reentry==1.2.0a1'],
+        install_requires=['reentry==1.2.0a1'],
         reentry_scan=['reentry_test'],
         reentry_register=True,
         entry_points={

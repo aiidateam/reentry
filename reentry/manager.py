@@ -41,6 +41,10 @@ class PluginManager(object):
         """
         return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
 
+    @staticmethod
+    def format_map(entry_point_map):
+        return '\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in entry_point_map.items()])
+
     def register(self, distribution):
         """
         Registers the distribution's entry points with the backend.
@@ -50,9 +54,10 @@ class PluginManager(object):
         Takes either a string or a Distribution object as passed by setuptools to hooks during install.
         """
         if isinstance(distribution, six.string_types):
-            self._backend.write_st_dist(distribution)
+            dist_name, entry_point_map = self._backend.write_st_dist(distribution)
         else:
-            self._backend.write_install_dist(distribution)
+            dist_name, entry_point_map = self._backend.write_install_dist(distribution)
+        return dist_name, entry_point_map
 
     def scan(self, groups=None, group_re=None, nocommit=False):
         """

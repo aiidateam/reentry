@@ -44,6 +44,7 @@ class JsonBackend(BackendInterface):
         dname = dist.project_name
         epmap = dist.get_entry_map()
         self.write_dist_map(dname, epmap)
+        return dname, epmap
 
     def write_dist_map(self, distname, entry_point_map=None):
         dname = distname
@@ -66,7 +67,7 @@ class JsonBackend(BackendInterface):
 
     def write_st_dist(self, dist):
         """Add a distribution by name."""
-        self.write_pr_dist(self.pr_dist_from_name(dist))
+        return self.write_pr_dist(self.pr_dist_from_name(dist))
 
     def write_install_dist(self, dist):
         """Add a distribution during it's install."""
@@ -81,6 +82,7 @@ class JsonBackend(BackendInterface):
                 entry_point = EntryPoint.parse(entrypoint_string)
                 entrypoint_map[group][entry_point.name] = entrypoint_string
         self.write_dist_map(distname, entrypoint_map)
+        return distname, entrypoint_map
 
     def iter_group(self, group):
         """Iterate over entry points within a given group."""

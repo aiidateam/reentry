@@ -8,7 +8,7 @@ from reentry.config import get_datafile
 
 def main():
     """Test automatic scanning / registering"""
-    entry_point_map = manager.get_entry_map(groups='reentry_test', ep_names=['test-plugin', 'test-noreg'])
+    entry_point_map = manager.get_entry_map(groups='reentry_test', ep_names=['test-plugin', 'test-noreg', 'builtin'])
     data_file = py_path.local(get_datafile())
 
     assert entry_point_map, 'The test plugin entry point were not found\nMap:\n{}\n\nData File: {}\n\nContents:\n{}'.format(
@@ -21,11 +21,11 @@ def main():
     except Exception as err:
         print('datafile: {}'.format(data_file.strpath))
         print('\nCurrent relevant entry point map:\n\n')
-        print('\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in entry_point_map.items()]))
+        print(manager.format_map(entry_point_map))
         print('\n')
         scan_map = manager.scan(groups=['reentry_test'], nocommit=True)
         print('\nFull entry point map after scan:\n\n')
-        print('\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in scan_map.items()]))
+        print(manager.format_map(scan_map))
         raise err
 
     plugin_class = test_entry_point.load()
