@@ -82,7 +82,7 @@ class PluginManager(object):
         full_map = {}
 
         if nodelete:
-            full_map = self.get_entry_map(groups=groups)
+            full_map = self._backend.ep_map()
 
         for dists in pr_env._distmap.values():  # pylint: disable=protected-access
             dist = dists[0]

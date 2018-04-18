@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - change data file name to be based on `sys.executable` to make sure entry points registered during install phase are available afterwards
- 
 
 ### Added
  - setup coveralls
