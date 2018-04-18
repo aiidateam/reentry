@@ -7,4 +7,7 @@ if __name__ == '__main__':
         packages=find_packages(),
         install_requires=['reentry'],
         reentry_scan=['reentry_test'],
-        entry_points={'console_scripts': ['reentry-test-hooks = reentry_test_host.tests:main']})
+        entry_points={
+            'console_scripts': ['reentry-test-hooks = reentry_test_host.tests:main'],
+            'reentry_test': ['builtin = reentry_test_host.builtin:PluginClass']
+        })

@@ -1,5 +1,6 @@
 """Find and read user settings."""
 import os
+import sys
 
 import six
 from six.moves import configparser
@@ -47,7 +48,7 @@ def get_datafile():
     """Create the path to the data file used to store entry points."""
     config = get_config()
     sep = os.path.sep
-    pkg_path_filename = py_path.local(__file__).dirname.lstrip(sep).replace(sep, '.')
+    pkg_path_filename = py_path.local(sys.executable).dirname.lstrip(sep).replace(sep, '.')
     datafile = py_path.local(config.get('general', 'datadir')).join(pkg_path_filename)
     datafile.ensure()
     if not datafile.read():

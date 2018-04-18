@@ -7,21 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Added
+ - CI test for registering entry points from the plugin host
+
+### Changed
+ - change data file name to be based on `sys.executable` to make sure entry points registered during install phase are available afterwards
+ 
+
+### Added
  - setup coveralls
  - added coverage badge to REAME
  - cli: `reentry dev coveralls` runs coveralls only if TRAVIS env variable is set
 
-## [0.1.2]
+## [1.1.2]
 
 ### Changed
  - fixed a bug that prevented from installing on windows
 
-## [0.1.1]
+## [1.1.1]
 
 ### Changed
  - fixed a bug that prevented from installing in python 2.7 (added regression test)
 
-## [0.1.0]
+## [1.1.0]
 
 ### Added
  - reentry now reads configuration from ~/.reentryrc or ~/.config/reentry/config if exists
