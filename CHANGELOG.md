@@ -6,17 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Added
- - CI test for registering entry points from the plugin host
-
 ### Changed
- - change data file name to be based on `sys.executable` to make sure entry points registered during install phase are available afterwards
+ - data file name based on `sys.executable` to make sure entry points registered during install phase are available afterwards
+ - `reentry_scan` during install no longer overwrites, but only adds (distributions installed simultaneously in one `pip` invocation can not discover each other's entry points and might overwrite each other)
 
 ### Added
  - setup coveralls
  - added coverage badge to REAME
  - cli: `reentry dev coveralls` runs coveralls only if TRAVIS env variable is set
  - read data dir from REENTRY_DATADIR env variable (env > rcfile > default)
+ - CI test for registering entry points from the plugin host
+ - documented limitations of `reentry_scan`
 
 ## [1.1.2]
 

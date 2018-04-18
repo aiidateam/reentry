@@ -10,6 +10,29 @@ Reentry
 
 A plugin manager based on setuptools entry points with 10x the speed
 
+Features
+--------
+
+* finding plugins: reentry keeps a map of entry points in a file
+* speed: reentry provides an EntryPoint implementation that trades extras for search and load speed
+* automatic registering: use ``reentry_register`` in your ``setup.py`` to automatically register plugins
+* automatic scanning: use ``reentry_scan`` in your ``setup.py`` to automatically discover previously installed plugins
+
+Limitations
+-----------
+
+* entry points with extras dependencies still work trying to load them will lead to loading pkg_resources
+* automatic scanning does not discover plugins installed during the same invocation of ``pip``::
+
+   pip install plugin host
+
+will not work, if ``plugin`` does not ``reentry_register``, and ``host`` does ``reentry_scan``, however::
+
+   pip install plugin
+   pip install host
+
+Will work.
+
 Quickstart
 ----------
 
@@ -50,6 +73,8 @@ If your host package should search for entrypoints that were not installed using
       reentry_scan=['my_plugins', 'other_type_of_plugins']
       ...
    )
+
+Note, that ``reentry_scan`` has to be a list, even if you only scan for one group.
 
 
 What for?
@@ -142,11 +167,3 @@ Reentry provides a drop-in replacement for iter_entry_points::
 
 For this to work, reentry has to be installed and must have been used to
 scan for entry points in the 'cli_plugins' group once.
-
-Features
------------------
-
-* finding plugins: reentry keeps a map of entry points in a file
-* speed: reentry provides an EntryPoint implementation that trades extras for search and load speed
-* automatic registering: reentry provides setup() keyword args to register and scan for entry points on install
-* flexible: entry points with extras dependencies still work trying to load them will lead to loading pkg_resources

@@ -34,12 +34,12 @@ def main(with_noreg):
         raise err
 
     plugin_class = test_entry_point.load()
-    noreg_class = noreg_entry_point.load()
     builtin_class = builtin_entry_point.load()
 
     assert plugin_class.test_string == 'TEST', 'The test string was incorrect'
     assert builtin_class.test_string == 'TEST', 'The test string was incorrect'
     if with_noreg:
+        noreg_class = noreg_entry_point.load()
         assert noreg_class.test_string == 'TEST', 'The test string was incorrect'
 
     plugin_list = [ep.load() for ep in manager.iter_entry_points('reentry_test')]
