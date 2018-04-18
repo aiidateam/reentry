@@ -59,14 +59,20 @@ class PluginManager(object):
             dist_name, entry_point_map = self._backend.write_install_dist(distribution)
         return dist_name, entry_point_map
 
-    def scan(self, groups=None, group_re=None, nocommit=False):
+    def scan(self, groups=None, group_re=None, nocommit=False, nodelete=False):
         """
         walks through all distributions available and registers entry points or only those in `groups`
         """
         import pkg_resources as pr
         pr_env = pr.AvailableDistributions()
         pr_env.scan()
-        if not nocommit:
+        if not groups and group_re:
+            groups = []
+
+        if group_re:
+            groups.extend({group for group in self._backend.get_group_names() if group_re.match(group)})
+
+        if not nocommit and nodelete:
             if groups:
                 for group in groups:
                     self._backend.rm_group(group)
@@ -74,16 +80,20 @@ class PluginManager(object):
                 self._backend.clear()
 
         full_map = {}
+
+        if nodelete:
+            full_map = self.get_entry_map(groups=groups)
+
         for dists in pr_env._distmap.values():  # pylint: disable=protected-access
             dist = dists[0]
             emap = dist.get_entry_map() or {}
-            if groups:
-                dmap = {k: v for k, v in six.iteritems(emap) if k in groups}
-            elif group_re:
-                dmap = {k: v for k, v in six.iteritems(emap) if group_re.match(k)}
-            else:
-                dmap = emap
             dname = dist.project_name
+            dmap = full_map.get(dname, {})
+            if groups:
+                new_dmap = {k: v for k, v in six.iteritems(emap) if k in groups}
+                dmap.update(new_dmap)
+            else:
+                dmap.update(emap)
             if not nocommit:
                 self._backend.write_dist_map(dname, entry_point_map=dmap)
             full_map[dname] = [dmap]

@@ -64,9 +64,13 @@ def scan_for_installed(dist, attr, value):  # pylint: disable=unused-argument
     """
     ensure_list(value, attr)
     if value:
-        print('scanning for plugins...')
         from reentry import manager
-        manager.scan(groups=value, group_re=False)
+        print('scanning for plugins in groups {}'.format(value), file=sys.stderr)
+        print('Current entry point map at %s:', get_datafile(), file=sys.stderr)
+        print(manager.format_map(manager.get_entry_map()), file=sys.stderr)
+        scanned_map = manager.scan(groups=value, group_re=False, nodelete=True)
         print('... plugin scanning done.', file=sys.stderr)
+        print('Replaced following parts of the map at %s:', get_datafile(), file=sys.stderr)
+        print(manager.format_map(scanned_map), file=sys.stderr)
         print('Current entry point map at %s:', get_datafile(), file=sys.stderr)
         print(manager.format_map(manager.get_entry_map()), file=sys.stderr)
