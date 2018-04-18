@@ -41,9 +41,15 @@ class PluginManager(object):
         """
         return self._backend.get_map(dist=dist_names, group=groups, name=ep_names)
 
+    def get_dist_map(self, dist=None):
+        """Get a map of entry points sorted by distribution."""
+        return self._backend.get_dist_map(dist=dist)
+
     @staticmethod
-    def format_map(entry_point_map):
-        return '\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in entry_point_map.items()])
+    def format_map(entry_point_map, indent=1):
+        tabs = '\t' * indent
+        newl = '\n' + tabs
+        return tabs + newl.join(['{} -> {}'.format(dname, dmap) for dname, dmap in entry_point_map.items()])
 
     def register(self, distribution):
         """
@@ -72,7 +78,7 @@ class PluginManager(object):
         if group_re:
             groups.extend({group for group in self._backend.get_group_names() if group_re.match(group)})
 
-        if not nocommit and nodelete:
+        if not nocommit and not nodelete:
             if groups:
                 for group in groups:
                     self._backend.rm_group(group)

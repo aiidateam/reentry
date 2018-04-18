@@ -38,12 +38,14 @@ def register_dist(dist, attr, value):
         raise DistutilsSetupError('{} must be a boolean, got {}'.format(attr, value))
 
     if value:
-        print('registering entry points with reentry...', file=sys.stderr)
+        print('[ REENTRY ] registering entry points with reentry...', file=sys.stderr)
         from reentry import manager
         dist_name, entry_point_map = manager.register(dist)
-        print('... registered to {}'.format(get_datafile()), file=sys.stderr)
-        print('Following entrypoints were registered\n', file=sys.stderr)
+        print('[ REENTRY ] ... registered to {}'.format(get_datafile()), file=sys.stderr)
+        print('[ REENTRY ] Following entrypoints were registered\n', file=sys.stderr)
         print(manager.format_map({dist_name: entry_point_map}), file=sys.stderr)
+        print('[ REENTRY ] Current entry point map at {}:'.format(get_datafile()), file=sys.stderr)
+        print(manager.format_map(manager.get_dist_map()), file=sys.stderr)
 
 
 def ensure_list(value, attr):
@@ -63,12 +65,12 @@ def scan_for_installed(dist, attr, value):  # pylint: disable=unused-argument
     ensure_list(value, attr)
     if value:
         from reentry import manager
-        print('scanning for plugins in groups {}...'.format(value), file=sys.stderr)
-        print('Current entry point map at {}:'.format(get_datafile()), file=sys.stderr)
-        print(manager.format_map(manager.get_entry_map()), file=sys.stderr)
+        print('[ REENTRY ] scanning for plugins in groups {}...'.format(value), file=sys.stderr)
+        print('[ REENTRY ] Current entry point map at {}:'.format(get_datafile()), file=sys.stderr)
+        print(manager.format_map(manager.get_dist_map()), file=sys.stderr)
         scanned_map = manager.scan(groups=value, group_re=False, nodelete=True)
-        print('... plugin scanning done.', file=sys.stderr)
-        print('Replaced following parts of the map at {}:'.format(get_datafile()), file=sys.stderr)
+        print('[ REENTRY ] ... plugin scanning done.', file=sys.stderr)
+        print('[ REENTRY ] Replaced following parts of the map at {}:'.format(get_datafile()), file=sys.stderr)
         print(manager.format_map(scanned_map), file=sys.stderr)
-        print('Current entry point map at {}:'.format(get_datafile()), file=sys.stderr)
-        print(manager.format_map(manager.get_entry_map()), file=sys.stderr)
+        print('[ REENTRY ] Current entry point map at {}:'.format(get_datafile()), file=sys.stderr)
+        print(manager.format_map(manager.get_dist_map()), file=sys.stderr)

@@ -93,8 +93,10 @@ class JsonBackend(BackendInterface):
     def get_pr_dist_map(self, dist):
         return self.get_dist_map(dist.project_name)
 
-    def get_dist_map(self, dist):
+    def get_dist_map(self, dist=None):
         """Return the entry map of a given distribution."""
+        if not dist:
+            return self.epmap.copy()
         dmap = self.epmap.get(dist, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
