@@ -25,3 +25,4 @@ build/
 *_REMOTE_*
 .coverage
 .tox
+*.log

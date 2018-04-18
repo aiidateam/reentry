@@ -19,9 +19,13 @@ def main():
         noreg_entry_point = entry_point_map['reentry_test']['test-noreg']
         builtin_entry_point = entry_point_map['reentry_test']['builtin']
     except Exception as err:
+        print('datafile: {}'.format(data_file.strpath))
+        print('\nCurrent relevant entry point map:\n\n')
+        print('\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in entry_point_map.items()]))
+        print('\n')
         scan_map = manager.scan(groups=['reentry_test'], nocommit=True)
+        print('\nFull entry point map after scan:\n\n')
         print('\n'.join(['{} -> {}'.format(dname, dmap) for dname, dmap in scan_map.items()]))
-        print(entry_point_map)
         raise err
 
     plugin_class = test_entry_point.load()
