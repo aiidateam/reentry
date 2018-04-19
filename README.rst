@@ -18,9 +18,26 @@ Features
 * automatic registering: use ``reentry_register`` in your ``setup.py`` to automatically register plugins
 * automatic scanning: use ``reentry_scan`` in your ``setup.py`` to automatically discover previously installed plugins
 
+Note that ``reentry_register`` and ``reentry_scan`` create a build-time dependency on ``reentry``. The suggested way to resolve that is using the method described in `PEP518 <https://www.python.org/dev/peps/pep-0518/>`_, for which `support has been added in pip 10 <https://pip.pypa.io/en/latest/reference/pip/#pep-518-support>`_: next to ``setup.py``, put a file ``pyproject.toml`` containing::
+
+   [build-system]
+   # Minimum requirements for the build system to execute.
+   requires = ["setuptools", "wheel", "reentry"]
+
+An alternative way for specifying a build dependency is to put::
+
+   setup(
+      ...
+      setup_requires=[reentry],
+      ...
+   )
+
+in your ``setup.py``, this works with all versions of ``pip``, but fails on systems, where python is linked to old ``SSL`` libraries (like system python for some versions of OS X).
+
 Limitations
 -----------
 
+* 
 * entry points with extras dependencies still work trying to load them will lead to loading pkg_resources
 * automatic scanning does not discover plugins installed during the same invocation of ``pip``::
 

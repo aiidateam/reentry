@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.2.0] - 2018-04-19
+
 ### Changed
  - data file name based on `sys.executable` to make sure entry points registered during install phase are available afterwards
  - `reentry_scan` during install no longer overwrites, but only adds (distributions installed simultaneously in one `pip` invocation can not discover each other's entry points and might overwrite each other)
