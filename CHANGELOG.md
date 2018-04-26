@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+ - data file is now composed of the directory in which the python executable sits and the python major version (2 or 3)
+
 ## [1.2.0] - 2018-04-19
 
 ### Changed
@@ -19,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - read data dir from REENTRY_DATADIR env variable (env > rcfile > default)
  - CI test for registering entry points from the plugin host
  - documented limitations of `reentry_scan`
+ - documented compatibility issues with `setup_requires`
 
 ## [1.1.2]
 

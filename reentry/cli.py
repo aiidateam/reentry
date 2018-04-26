@@ -1,7 +1,11 @@
 """Command line interface for reentry"""
 import sys
+import os
+import subprocess
 
 import click
+
+from reentry.config import get_datafile
 
 
 @click.group()
@@ -46,13 +50,6 @@ def map_(dist, group, name):
     click.echo(pprint.pformat(res))
 
 
-@reentry.command('datafile')
-def datafile():
-    """Print the path to the current datafile."""
-    from reentry.config import get_datafile
-    click.echo(get_datafile())
-
-
 @reentry.group('dev')
 def dev():
     """Development related commands."""
@@ -65,9 +62,13 @@ def echo_call(cmd):
 @dev.command()
 def coveralls():
     """Run coveralls only on travis."""
-    import os
-    import subprocess
     if os.getenv('TRAVIS'):
         cmd = ['coveralls']
         echo_call(cmd)
         subprocess.call(cmd)
+
+
+@dev.command('datafile')
+def datafile():
+    """Print the path to the current datafile."""
+    click.echo(get_datafile())

@@ -1,2 +1,2 @@
 [build-system]
-requires = ["setuptools", "wheel", "reentry >= 1.2.0a9"]
+requires = ["setuptools", "wheel", "reentry >= 1.2.1a2"]
