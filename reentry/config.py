@@ -55,7 +55,7 @@ def get_config(config_file_name=find_config().strpath):
 def make_data_file_name():
     """Find the path to the reentry executable and mangle it into a file name."""
     sep = os.path.sep
-    python_bin_dir = py_path.local(sys.executable).dirpath()
+    python_bin_dir = py_path.local(sys.executable).dirname
     py_version = 'UNKNOWN'
     if six.PY2:
         py_version = 'PY2'
