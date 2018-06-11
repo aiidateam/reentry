@@ -83,26 +83,26 @@ def test_write_dist_map(bkend):
 def test_write_pr_dist(bkend):
     """Test caching entry points for a given pkg_resources - distribution"""
     this_dist = bkend.pr_dist_from_name('reentry')
-    bkend.write_pr_dist(this_dist)
-    assert 'reentry' in list(bkend.get_dist_names())
-    assert bkend.get_map(dist='reentry')
+    dist_name, ep_map = bkend.scan_pr_dist(this_dist)
+    assert dist_name == 'reentry'
+    assert 'test_entry_points' in ep_map
 
 
 def test_write_st_dist(bkend):
     """Test caching entry points for a distribution given by name."""
-    bkend.write_st_dist('reentry')
-    assert 'reentry' in list(bkend.get_dist_names())
-    assert bkend.get_map(dist='reentry')
+    dist_name, ep_map = bkend.scan_st_dist('reentry')
+    assert dist_name == 'reentry'
+    assert 'test_entry_points' in ep_map
 
 
-def test_write_install_dist(bkend):
+def test_scan_install_dist(bkend):
     """Test caching entry points for a pkg_resources - distribution at install time."""
     this_dist = bkend.pr_dist_from_name('reentry')
     this_dist.get_name = lambda: 'reentry'
     this_dist.entry_points = {'foo': ['bar = foo.bar:baz']}
-    bkend.write_install_dist(this_dist)
-    assert 'reentry' in list(bkend.get_dist_names())
-    assert 'foo' in bkend.get_map(dist='reentry')
+    dist_name, ep_map = bkend.scan_install_dist(this_dist)
+    assert dist_name == 'reentry'
+    assert 'foo' in ep_map
 
 
 def test_rm_dist(bkend):

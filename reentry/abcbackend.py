@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 """Abstract base class for backends"""
-from abc import ABCMeta
+import abc
+import six
 
 
 class BackendInterface(object):
@@ -10,8 +11,9 @@ class BackendInterface(object):
 
     All methods without a method body need to be implemented in a backend.
     """
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
+    @abc.abstractmethod
     def get_map(self, dist=None, group=None, name=None):
         """
         get a map of entry points, filtered by
@@ -31,54 +33,59 @@ class BackendInterface(object):
                 },
         """
 
+    @abc.abstractmethod
     def iter_group(self, group):
         """
         returns a list of entry points for the given group name
         """
 
+    @abc.abstractmethod
     def get_group_names(self):
         """
         returns a list of group names
         """
 
+    @abc.abstractmethod
     def get_dist_names(self):
         """
         returns a list of distribution names
         """
 
+    @abc.abstractmethod
     def get_dist_map(self, dist):
         """
         returns a map {group:[entry_points, ...], ...} for the given dist name
         """
 
-    def write_pr_dist(self, dist):
-        """
-        add a distribution, empty by default
-        """
+    @abc.abstractmethod
+    def scan_st_dist(self, dist):
+        """Scan a distribution given by a name, empty by default."""
 
-    def write_st_dist(self, dist):
-        """
-        add a distribution during it's installation
-        """
+    @abc.abstractmethod
+    def scan_install_dist(self, dist):
+        """Add an incomplete distribution as passed by setuptools during it's installation."""
 
-    def write_dist(self, distname, entry_point_map=None):
+    def scan_dist(self, distribution):
         """
         take a distribution's project name, add the distribution
         """
-        if entry_point_map:
-            self.write_dist_map(distname=distname, entry_point_map=entry_point_map)
+        if isinstance(distribution, six.string_types):
+            dist_name, entry_point_map = self.scan_st_dist(distribution)
         else:
-            dist = self.pr_dist_from_name(distname)
-            self.write_pr_dist(dist)
+            dist_name, entry_point_map = self.scan_install_dist(distribution)
+        return dist_name, entry_point_map
 
+    @abc.abstractmethod
     def write_dist_map(self, distname, entry_point_map=None):
         """Write a distribution given the name and entry point map"""
 
+    @abc.abstractmethod
     def rm_dist(self, distname):
         """
         removes a distribution completely
         """
 
+    @abc.abstractmethod
     def clear(self):
         """Clears all stored entry points"""
 
@@ -93,3 +100,7 @@ class BackendInterface(object):
         from pkg_resources import get_distribution
         dist = get_distribution(distname)
         return dist
+
+    @abc.abstractproperty
+    def epmap(self):
+        """Full map {distribution: {group: [{name: entry_point}]}}."""

@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.2.1] - 2018-06-11
+
+### Changed
+ - data file is now composed of the directory in which the python executable sits and the python major version (2 or 3)
+ - setuptools relevant entry points can now be registered if specifically asked for
+ - `PluginManager.scan`: `group_re` kwarg now allows string regex too
+ - `PluginManager.iter_entry_points`: now scans by default if group or entry point not found
+ - `PluginManager`: new constructor kwarg `scan_for_not_found` defaults to `True`, set to `False` to fail faster when no cached group / entry point is found.
+ - `JsonBackend`, `BackendInterface`: The `write_*_dist()` methods have been replaced by `scan_*dist()`, the output of which can be passed to the `write_dist_map()` method.
+ - `JsonBackend.epmap`: promoted to read-only property, returns copy of internal map.
+
 ## [1.2.0] - 2018-04-19
 
 ### Changed
@@ -19,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - read data dir from REENTRY_DATADIR env variable (env > rcfile > default)
  - CI test for registering entry points from the plugin host
  - documented limitations of `reentry_scan`
+ - documented compatibility issues with `setup_requires`
 
 ## [1.1.2]
 

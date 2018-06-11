@@ -52,11 +52,23 @@ def get_config(config_file_name=find_config().strpath):
     return parser
 
 
+def make_data_file_name():
+    """Find the path to the reentry executable and mangle it into a file name."""
+    sep = os.path.sep
+    python_bin_dir = py_path.local(sys.executable).dirname
+    py_version = 'UNKNOWN'
+    if six.PY2:
+        py_version = 'PY2'
+    elif six.PY3:
+        py_version = 'PY3'
+    file_name = python_bin_dir.lstrip(sep).replace(sep, '.').replace('.', '_') + '_' + py_version
+    return file_name
+
+
 def get_datafile():
     """Create the path to the data file used to store entry points."""
     config = get_config()
-    sep = os.path.sep
-    pkg_path_filename = py_path.local(sys.executable).strpath.lstrip(sep).replace(sep, '.')
+    pkg_path_filename = make_data_file_name()
     datafile = py_path.local(config.get('general', 'datadir')).join(pkg_path_filename)
     datafile.ensure()
     if not datafile.read():
