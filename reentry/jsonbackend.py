@@ -21,7 +21,11 @@ class JsonBackend(BackendInterface):
         if not exists(self.datafile):
             with open(self.datafile, 'w') as datafp:
                 datafp.write('{}')
-        self.epmap = self.read()
+        self._epmap = self.read()
+
+    @property
+    def epmap(self):
+        return self._epmap.copy()
 
     def read(self):
         """
@@ -35,41 +39,33 @@ class JsonBackend(BackendInterface):
         write the current state to storage
         """
         with open(self.datafile, 'w') as cache_file_obj:
-            json.dump(self.epmap, cache_file_obj)
+            json.dump(self._epmap, cache_file_obj)
 
-    def write_pr_dist(self, dist):
+    @staticmethod
+    def scan_pr_dist(dist):
         """
         add a distribution, empty by default
         """
         dname = dist.project_name
         epmap = dist.get_entry_map()
-        self.write_dist_map(dname, epmap)
         return dname, epmap
 
     def write_dist_map(self, distname, entry_point_map=None):
         dname = distname
-        # extract entry points that are clearly not for plugins
-        entry_point_map.pop('console_scripts', None)
-        entry_point_map.pop('gui_scripts', None)
-        entry_point_map.pop('distutils.commands', None)
-        entry_point_map.pop('distutils.setup_keywords', None)
-        entry_point_map.pop('setuptools.installation', None)
-        entry_point_map.pop('setuptools.file_finders', None)
-        entry_point_map.pop('egg_info.writers', None)
         entry_point_map = {k: {kk: str(vv) for kk, vv in six.iteritems(v)} for k, v in six.iteritems(entry_point_map)}
         # update entry point storage
         # --> only if there is something to update though
         if entry_point_map:
-            if not self.epmap.get(dname):
-                self.epmap[dname] = {}
-            self.epmap[dname].update(entry_point_map)
+            if not self._epmap.get(dname):
+                self._epmap[dname] = {}
+            self._epmap[dname].update(entry_point_map)
             self.write()
 
-    def write_st_dist(self, dist):
+    def scan_st_dist(self, dist):
         """Add a distribution by name."""
-        return self.write_pr_dist(self.pr_dist_from_name(dist))
+        return self.scan_pr_dist(self.pr_dist_from_name(dist))
 
-    def write_install_dist(self, dist):
+    def scan_install_dist(self, dist):
         """Add a distribution during it's install."""
         distname = dist.get_name()
         entrypoint_map = {}
@@ -81,13 +77,12 @@ class JsonBackend(BackendInterface):
             for entrypoint_string in entrypoint_list:
                 entry_point = EntryPoint.parse(entrypoint_string)
                 entrypoint_map[group][entry_point.name] = entrypoint_string
-        self.write_dist_map(distname, entrypoint_map)
         return distname, entrypoint_map
 
     def iter_group(self, group):
         """Iterate over entry points within a given group."""
-        for dist in self.epmap:
-            for _, entry_point_spec in six.iteritems(self.epmap[dist].get(group, {})):
+        for dist in self._epmap:
+            for _, entry_point_spec in six.iteritems(self._epmap[dist].get(group, {})):
                 yield EntryPoint.parse(entry_point_spec)
 
     def get_pr_dist_map(self, dist):
@@ -96,8 +91,8 @@ class JsonBackend(BackendInterface):
     def get_dist_map(self, dist=None):
         """Return the entry map of a given distribution."""
         if not dist:
-            return self.epmap.copy()
-        dmap = self.epmap.get(dist, {}).copy()
+            return self._epmap.copy()
+        dmap = self._epmap.get(dist, {}).copy()
         for gname in dmap:
             for epname in dmap[gname]:
                 dmap[gname][epname] = EntryPoint.parse(dmap[gname][epname])
@@ -117,7 +112,7 @@ class JsonBackend(BackendInterface):
         """
         if not dist:
             specs = []
-            for dist_name in self.epmap.keys():
+            for dist_name in self._epmap.keys():
                 spc = self.get_ep(group, name, dist=dist_name)
                 if spc:
                     specs.append(spc)
@@ -126,7 +121,7 @@ class JsonBackend(BackendInterface):
             elif len(specs) == 1:
                 return specs[0]
         else:
-            distribution_map = self.epmap.get(dist, {})
+            distribution_map = self._epmap.get(dist, {})
             group_map = distribution_map.get(group, {})
             spec = group_map.get(name)
             if spec:
@@ -137,7 +132,7 @@ class JsonBackend(BackendInterface):
         """
         Returns a list of distribution names
         """
-        return self.epmap.keys()
+        return self._epmap.keys()
 
     def get_group_names(self):
         """
@@ -145,7 +140,7 @@ class JsonBackend(BackendInterface):
         """
         glist = []
         for dist in self.get_dist_names():
-            glist.extend(self.epmap[dist].keys())
+            glist.extend(self._epmap[dist].keys())
 
         return list(set(glist))
 
@@ -154,22 +149,22 @@ class JsonBackend(BackendInterface):
         removes a distributions entry points from the storage
         """
         if distname in self.get_dist_names():
-            self.epmap.pop(distname)
+            self._epmap.pop(distname)
         self.write()
 
     def rm_group(self, group):
         """
         removes a group from all dists
         """
-        for dist in self.epmap:
-            self.epmap[dist].pop(group, None)
+        for dist in self._epmap:
+            self._epmap[dist].pop(group, None)
         self.write()
 
     def clear(self):
         """
         completely clear entry_point storage
         """
-        self.epmap = {}
+        self._epmap = {}
         self.write()
 
     def get_map(self, dist=None, group=None, name=None):
@@ -198,10 +193,10 @@ class JsonBackend(BackendInterface):
             group_list = self.get_group_names()
         group_set = set()
         for distribution in distribution_list:
-            if distribution not in self.epmap:
+            if distribution not in self._epmap:
                 raise ValueError("The {} distribution was not found.".format(distribution))
             else:
-                group_set.update([group_name for group_name in self.epmap[distribution].keys() if group_name in group_list])
+                group_set.update([group_name for group_name in self._epmap[distribution].keys() if group_name in group_list])
         return group_set
 
     def _filter_entry_points(self, dist_list, group_list, name_list):
@@ -279,7 +274,7 @@ class JsonBackend(BackendInterface):
     def _flat_entry_points(self):
         """Get a flat dict of entry points (keys) annotated with {name: .., group: .., dist: ..} (values)"""
         epflat = {}
-        for distribution, dist_dict in six.iteritems(self.epmap):
+        for distribution, dist_dict in six.iteritems(self._epmap):
             for group, group_dict in six.iteritems(dist_dict):
                 for ep_name, entry_point in six.iteritems(group_dict):
                     epflat[entry_point] = {'name': ep_name, 'group': group, 'dist': distribution}

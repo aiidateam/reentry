@@ -36,6 +36,13 @@ def bkend(test_data):
 
 @pytest.fixture
 def manager(bkend):
-    from reentry.manager import PluginManager
+    from reentry.default_manager import PluginManager
     manager = PluginManager(backend=bkend)
+    yield manager
+
+
+@pytest.fixture
+def noscan_manager(bkend):
+    from reentry.default_manager import PluginManager
+    manager = PluginManager(backend=bkend, scan_for_not_found=False)
     yield manager

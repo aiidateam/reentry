@@ -1,6 +1,7 @@
 set -ev
 case "$TEST_TYPE" in 
     unittests)
+        python setup.py bdist_wheel
         tox
         ;;
     pre-commit)
