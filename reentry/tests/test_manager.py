@@ -1,8 +1,9 @@
 # pylint: disable=unused-import,redefined-outer-name
 """Unit tests for manager functions"""
+import re
 import pytest
 
-from fixtures import test_data, bkend, manager
+from fixtures import test_data, bkend, manager, noscan_manager
 
 
 def test_get_entry_map(manager):
@@ -67,6 +68,22 @@ def test_scan_group(manager):
     assert 'console_scripts' not in ep_map
 
 
+def test_scan_group_re(manager):
+    manager.scan(group_re=re.compile(r'test_[a-z]+_[a-z]+'))
+    assert 'test_entry_points' in manager.get_entry_map(dist_names='reentry')
+    manager.scan(group_re=r'console.*')
+    assert 'console_scripts' in manager.get_entry_map(dist_names='reentry')
+
+
 def test_unregister(manager):
     manager.unregister('distA')
     assert 'distA' not in manager.distribution_names
+
+
+def test_iter_scan(manager):
+    assert 'test' in [ep.name for ep in manager.iter_entry_points(group='test_entry_points')]
+    assert 'reentry' in [ep.name for ep in manager.iter_entry_points(group='console_scripts', name='reentry')]
+
+
+def test_iter_noscan(noscan_manager):
+    assert 'test' not in [ep.name for ep in noscan_manager.iter_entry_points(group='test_entry_points')]
