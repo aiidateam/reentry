@@ -1,10 +1,14 @@
 """Find and read user settings."""
 import os
 import sys
+try:
+    # prefer the backport for Python <3.5
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 
 import six
 from six.moves import configparser
-from py import path as py_path  # pylint: disable=no-name-in-module
 
 __all__ = ['find_config', 'get_config', 'get_datafile']
 
@@ -16,12 +20,12 @@ def find_config():
         * <HOME>/.reentryrc
         * <HOME>/.config/reentry/config
     """
-    home = py_path.local(os.path.expanduser('~'))
-    rc_file = home.join('.reentryrc')
-    config_file = home.join('.config', 'reentry', 'config')
-    if home.exists():
+    home = Path.home()
+    rc_file = home.joinpath('.reentryrc')
+    config_file = home.joinpath('.config', 'reentry', 'config')
+    if rc_file.exists():  # pylint: disable=no-member
         return rc_file
-    elif config_file.exists():
+    elif config_file.exists():  # pylint: disable=no-member
         return config_file
     return rc_file
 
@@ -35,19 +39,19 @@ def make_config_parser(*args, **kwargs):
     return None
 
 
-def get_config(config_file_name=find_config().strpath):
+def get_config(config_file_name=str(find_config())):
     """Create config parser with defaults and read in the config file."""
-    default_config_dir = py_path.local(os.path.expanduser('~/.config/reentry'))
-    parser = make_config_parser({'datadir': default_config_dir.join('data').strpath})
+    default_config_dir = Path('~/.config/reentry').expanduser()
+    parser = make_config_parser({'datadir': str(default_config_dir.joinpath('data'))})
     parser.add_section('general')
     parser.read([config_file_name])
 
     env_datadir = os.getenv('REENTRY_DATADIR')
     if env_datadir:
-        env_datadir_path = py_path.local(env_datadir)
-        if env_datadir_path.exists() and not env_datadir_path.isdir():
-            raise ValueError('environment variable $REENTRY_DATADIR={} exists, but is not a directory'.format(env_datadir.strpath))
-        parser.set('general', 'datadir', env_datadir_path.strpath)
+        env_datadir_path = Path(env_datadir)
+        if env_datadir_path.exists() and not env_datadir_path.is_dir():  # pylint: disable=no-member
+            raise ValueError('environment variable $REENTRY_DATADIR={} exists, but is not a directory'.format(env_datadir))
+        parser.set('general', 'datadir', str(env_datadir_path))
 
     return parser
 
@@ -55,7 +59,7 @@ def get_config(config_file_name=find_config().strpath):
 def make_data_file_name():
     """Find the path to the reentry executable and mangle it into a file name."""
     sep = os.path.sep
-    python_bin_dir = py_path.local(sys.executable).dirname
+    python_bin_dir = str(Path(sys.executable).parent)
     py_version = 'UNKNOWN'
     if six.PY2:
         py_version = 'PY2'
@@ -69,8 +73,10 @@ def get_datafile():
     """Create the path to the data file used to store entry points."""
     config = get_config()
     pkg_path_filename = make_data_file_name()
-    datafile = py_path.local(config.get('general', 'datadir')).join(pkg_path_filename)
-    datafile.ensure()
-    if not datafile.read():
-        datafile.write('{}')
-    return datafile.strpath
+    datafile = Path(config.get('general', 'datadir')).joinpath(pkg_path_filename)
+
+    if not datafile.exists():  # pylint: disable=no-member
+        datafile.parent.mkdir(parents=True, exist_ok=True)
+        datafile.write_text(u'{}')
+
+    return str(datafile)
