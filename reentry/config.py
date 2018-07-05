@@ -13,6 +13,10 @@ from six.moves import configparser
 __all__ = ['find_config', 'get_config', 'get_datafile']
 
 
+def _get_default_config_dir():
+    return Path(os.getenv('XDG_CONFIG_HOME', '~/.config')).expanduser().joinpath('reentry')
+
+
 def find_config():
     """
     Search for a config file in the following places and order:
@@ -20,9 +24,8 @@ def find_config():
         * <HOME>/.reentryrc
         * <HOME>/.config/reentry/config
     """
-    home = Path.home()
-    rc_file = home.joinpath('.reentryrc')
-    config_file = home.joinpath('.config', 'reentry', 'config')
+    rc_file = Path.home().joinpath('.reentryrc')
+    config_file = _get_default_config_dir().joinpath('config')
     if rc_file.exists():  # pylint: disable=no-member
         return rc_file
     elif config_file.exists():  # pylint: disable=no-member
@@ -41,7 +44,7 @@ def make_config_parser(*args, **kwargs):
 
 def get_config(config_file_name=str(find_config())):
     """Create config parser with defaults and read in the config file."""
-    default_config_dir = Path('~/.config/reentry').expanduser()
+    default_config_dir = _get_default_config_dir()
     parser = make_config_parser({'datadir': str(default_config_dir.joinpath('data'))})
     parser.add_section('general')
     parser.read([config_file_name])
