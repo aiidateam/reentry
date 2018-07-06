@@ -1,6 +1,8 @@
 """Find and read user settings."""
 import os
 import sys
+import hashlib
+import platform
 try:
     # prefer the backport for Python <3.5
     from pathlib2 import Path
@@ -72,12 +74,27 @@ def make_data_file_name():
     return file_name
 
 
+def hashed_data_file_name():
+    """Find the path to the reentry executable and mangle it into a file name."""
+
+    fname = 'u{bin_dir}_{impl}-{ver}'.format(
+        bin_dir=Path(sys.executable).resolve().parent, impl=platform.python_implementation(), ver=platform.python_version())
+
+    path_hash = hashlib.sha256(fname.encode('utf-8'))
+    return path_hash.hexdigest()
+
+
 def get_datafile():
     """Create the path to the data file used to store entry points."""
     config = get_config()
+
     pkg_path_filename = make_data_file_name()
     datafile = Path(config.get('general', 'datadir')).joinpath(pkg_path_filename)
+    if datafile.exists():  # pylint: disable=no-member
+        return str(datafile)  # if the unhashed exists, continue to use that one
 
+    pkg_path_filename = hashed_data_file_name()
+    datafile = Path(config.get('general', 'datadir')).joinpath(pkg_path_filename)
     if not datafile.exists():  # pylint: disable=no-member
         datafile.parent.mkdir(parents=True, exist_ok=True)
         datafile.write_text(u'{}')
