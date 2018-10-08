@@ -6,9 +6,11 @@ import json
 import fileinput
 import contextlib
 import subprocess
-
+try:
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 from packaging import version
-from py import path as py_path  # pylint: disable=no-name-in-module,no-member
 
 
 def subpath(*args):
@@ -47,19 +49,19 @@ class VersionUpdater(object):
 
     def __init__(self):
         """Initialize with documents that should be kept up to date and actual version."""
-        self.top_level_init = py_path.local(subpath('reentry', '__init__.py'))
-        self.setup_py = py_path.local(subpath('setup.py'))
+        self.top_level_init = Path(subpath('reentry', '__init__.py'))
+        self.setup_py = Path(subpath('setup.py'))
         self.version = self.get_version()
 
     def write_to_init(self):
-        init_content = self.top_level_init.read()
-        self.top_level_init.write(re.sub(self.init_version_pat, self.new_version_str, init_content, re.DOTALL | re.MULTILINE))
+        init_content = self.top_level_init.read_text()
+        self.top_level_init.write_text(re.sub(self.init_version_pat, self.new_version_str, init_content, re.DOTALL | re.MULTILINE))
 
     def write_to_setup(self):
         """Write the updated version number to the setup file."""
-        setup_content = self.setup_py.read()
+        setup_content = self.setup_py.read_text()
         new_content = re.sub(self.setup_version_pat, self.new_version_str, setup_content, re.DOTALL | re.MULTILINE)
-        self.setup_py.write(new_content)
+        self.setup_py.write_text(new_content)
 
     @property
     def new_version_str(self):
@@ -68,7 +70,7 @@ class VersionUpdater(object):
     @property
     def setup_version(self):
         """Grab the parsed version from the setup file."""
-        match = re.search(self.setup_version_pat, self.setup_py.read())
+        match = re.search(self.setup_version_pat, self.setup_py.read_text())
         if not match:
             raise AttributeError('No global variable VERSION found in setup.py')
         return version.parse(match.groups()[2])
@@ -76,7 +78,7 @@ class VersionUpdater(object):
     @property
     def init_version(self):
         """Grab the parsed version from the init file."""
-        match = re.search(self.init_version_pat, self.top_level_init.read())
+        match = re.search(self.init_version_pat, self.top_level_init.read_text())
         if not match:
             raise AttributeError('No __version__ found in top-level __init__.py')
         return version.parse(match.groups()[2])
@@ -89,7 +91,7 @@ class VersionUpdater(object):
             match = re.search(self.version_pat, describe_byte_string.decode(encoding='UTF-8'))
             version_string = match.string[match.pos:match.end()]
         except subprocess.CalledProcessError:
-            with open(self.setup_py, 'r') as setup_fo:
+            with self.setup_py.open() as setup_fo:
                 setup = json.load(setup_fo)
                 version_string = setup['version']
 
