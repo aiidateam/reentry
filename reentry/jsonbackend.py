@@ -120,12 +120,13 @@ class JsonBackend(BackendInterface):
                 return specs
             elif len(specs) == 1:
                 return specs[0]
-        else:
-            distribution_map = self._epmap.get(dist, {})
-            group_map = distribution_map.get(group, {})
-            spec = group_map.get(name)
-            if spec:
-                return EntryPoint.parse(spec)
+
+        distribution_map = self._epmap.get(dist, {})
+        group_map = distribution_map.get(group, {})
+        spec = group_map.get(name)
+        if spec:
+            return EntryPoint.parse(spec)
+
         return None
 
     def get_dist_names(self):
