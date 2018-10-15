@@ -7,10 +7,11 @@ from setuptools import setup, find_packages
 import json
 
 README_PATH = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
+JSON_PATH = path.join(path.dirname(path.abspath(__file__)), 'setup.json')
 
 # Provide static information in setup.json
 # such that it can be discovered automatically
-with open('setup.json', 'r') as info:
+with open(JSON_PATH, 'r') as info:
     kwargs = json.load(info)
 
 setup(
