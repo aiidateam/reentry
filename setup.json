@@ -23,7 +23,7 @@
     ],
     "install_requires": ["setuptools >= 18.5", "click", "six", "py"],
     "extras_require": {
-        "dev": ["pre-commit", "prospector",
+        "dev": ["pre-commit", "prospector==1.0",
             "pylint", "flake8", "pytest",
             "yapf", "coverage", "pytest-cov",
             "tox", "packaging"]
