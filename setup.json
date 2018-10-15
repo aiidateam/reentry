@@ -4,8 +4,6 @@
     "author": "Rico Haeuselmann",
     "license": "MIT License",
     "description": "A plugin manager based on setuptools entry points mechanism",
-    "include_package_data": true,
-    "package_data": {"": ["js_data", "README.rst"]},
     "entry_points": {
         "distutils.setup_keywords": [
             "reentry_register = reentry.hooks:register_dist", 

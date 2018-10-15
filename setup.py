@@ -12,4 +12,11 @@ README_PATH = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
 # such that it can be discovered automatically
 with open('setup.json', 'r') as info:
     kwargs = json.load(info)
-setup(packages=find_packages(), long_description=open(README_PATH).read(), long_description_content_type='text/x-rst', **kwargs)
+
+setup(
+    packages=find_packages(),
+    include_package_data=True,
+    package_data={'': ['js_data', 'README.rst']},
+    long_description=open(README_PATH).read(),
+    long_description_content_type='text/x-rst',
+    **kwargs)
