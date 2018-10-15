@@ -5,14 +5,14 @@ repos:
   - id: yapf
     language: system
 
-- repo: git://github.com/guykisel/prospector-mirror
-  sha: 7ff847e779347033ebbd9e3b88279e7f3a998b45
+- repo: local
   hooks:
   - id: prospector
     language: system
-
-- repo: local
-  hooks:
+    types: [file, python]
+    name: prospector
+    description: "This hook runs Prospector: https://github.com/landscapeio/prospector"
+    entry: prospector
   - id: travis-linter
     name: travis
     entry: travis lint
