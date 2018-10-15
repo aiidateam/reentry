@@ -20,6 +20,7 @@ def find_config():
     home = py_path.local(os.path.expanduser('~'))
     rc_file = home.join('.reentryrc')
     config_file = home.join('.config', 'reentry', 'config')
+    # pylint: disable=no-else-return
     if home.exists():
         return rc_file
     elif config_file.exists():
@@ -29,6 +30,7 @@ def find_config():
 
 def make_config_parser(*args, **kwargs):
     """Get the correct ConfigParser class depending on python version."""
+    # pylint: disable=no-else-return
     if six.PY2:
         return configparser.SafeConfigParser(*args, **kwargs)
     elif six.PY3:
