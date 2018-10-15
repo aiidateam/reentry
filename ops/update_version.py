@@ -6,6 +6,7 @@ import json
 import fileinput
 import contextlib
 import subprocess
+import collections
 
 from packaging import version
 from py import path as py_path  # pylint: disable=no-name-in-module,no-member
@@ -48,7 +49,7 @@ class VersionUpdater(object):
     def __init__(self):
         """Initialize with documents that should be kept up to date and actual version."""
         self.top_level_init = py_path.local(subpath('reentry', '__init__.py'))
-        self.setup_py = py_path.local(subpath('setup.py'))
+        self.setup_json = py_path.local(subpath('setup.json'))
         self.version = self.get_version()
 
     def write_to_init(self):
@@ -56,10 +57,12 @@ class VersionUpdater(object):
         self.top_level_init.write(re.sub(self.init_version_pat, self.new_version_str, init_content, re.DOTALL | re.MULTILINE))
 
     def write_to_setup(self):
-        """Write the updated version number to the setup file."""
-        setup_content = self.setup_py.read()
-        new_content = re.sub(self.setup_version_pat, self.new_version_str, setup_content, re.DOTALL | re.MULTILINE)
-        self.setup_py.write(new_content)
+        """Write the updated version number to setup.json."""
+        with open(str(self.setup_json), 'r+') as setup_fo:
+            # preserve order
+            setup = json.load(setup_fo, object_pairs_hook=collections.OrderedDict)
+            setup['version'] = self.new_version_str
+            json.dump(setup, setup_fo, indent=2)
 
     @property
     def new_version_str(self):
@@ -67,11 +70,16 @@ class VersionUpdater(object):
 
     @property
     def setup_version(self):
-        """Grab the parsed version from the setup file."""
-        match = re.search(self.setup_version_pat, self.setup_py.read())
-        if not match:
-            raise AttributeError('No global variable VERSION found in setup.py')
-        return version.parse(match.groups()[2])
+        """Grab the parsed version from setup.json."""
+        with open(str(self.setup_json), 'r') as setup_fo:
+            setup = json.load(setup_fo)
+
+        try:
+            version_string = setup['version']
+        except KeyError:
+            raise AttributeError('No version found in setup.json')
+
+        return version.parse(version_string)
 
     @property
     def init_version(self):
@@ -83,17 +91,14 @@ class VersionUpdater(object):
 
     @property
     def tag_version(self):
-        """Get the current version number from ``git describe``, fall back to setup.py."""
+        """Get the current version number from ``git describe``, fall back to setup.json."""
         try:
             describe_byte_string = subprocess.check_output(['git', 'describe', '--tags', '--match', 'v*.*.*'])
             match = re.search(self.version_pat, describe_byte_string.decode(encoding='UTF-8'))
             version_string = match.string[match.pos:match.end()]
+            return version.parse(version_string)
         except subprocess.CalledProcessError:
-            with open(self.setup_py, 'r') as setup_fo:
-                setup = json.load(setup_fo)
-                version_string = setup['version']
-
-        return version.parse(version_string)
+            return self.setup_version
 
     def get_version(self):
         return max(self.setup_version, self.init_version, self.tag_version)
