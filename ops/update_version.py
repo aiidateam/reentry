@@ -43,7 +43,6 @@ class VersionUpdater(object):
 
     version_pat = re.compile(r'\d+.\d+.\d+(-(alpha|beta|rc)(.\d+){0,3}){0,1}')
     init_version_pat = re.compile(r'(__version__ = )([\'"])(.*?)([\'"])', re.DOTALL | re.MULTILINE)
-    setup_version_pat = re.compile(r'(VERSION = )([\'"])(.*?)([\'"])', re.DOTALL | re.MULTILINE)
     replace_tmpl = r'\1\g<2>{}\4'
 
     def __init__(self):
