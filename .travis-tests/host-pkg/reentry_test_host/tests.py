@@ -2,7 +2,12 @@
 from __future__ import print_function
 
 import click
-from py import path as py_path  # pylint: disable=no-name-in-module
+
+try:
+    # prefer the backport for Python <3.5
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 
 from reentry import manager
 from reentry.config import get_datafile
@@ -13,10 +18,10 @@ from reentry.config import get_datafile
 def main(with_noreg):
     """Test automatic scanning / registering"""
     entry_point_map = manager.get_entry_map(groups='reentry_test', ep_names=['test-plugin', 'test-noreg', 'builtin'])
-    data_file = py_path.local(get_datafile())
+    data_file = Path(get_datafile())
 
     assert entry_point_map, 'The test plugin entry point were not found\nMap:\n{}\n\nData File: {}\n\nContents:\n{}'.format(
-        manager.get_entry_map(), data_file.strpath, data_file.read())
+        manager.get_entry_map(), str(data_file), data_file.read_text())
 
     try:
         test_entry_point = entry_point_map['reentry_test']['test-plugin']
@@ -24,7 +29,7 @@ def main(with_noreg):
         if with_noreg:
             noreg_entry_point = entry_point_map['reentry_test']['test-noreg']
     except Exception as err:
-        print('datafile: {}'.format(data_file.strpath))
+        print('datafile: {}'.format(str(data_file)))
         print('\nCurrent relevant entry point map:\n\n')
         print(manager.format_map(entry_point_map))
         print('\n')
