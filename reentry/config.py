@@ -1,6 +1,7 @@
 """Find and read user settings."""
 import os
 import sys
+import hashlib
 
 import six
 from six.moves import configparser
@@ -19,6 +20,7 @@ def find_config():
     home = py_path.local(os.path.expanduser('~'))
     rc_file = home.join('.reentryrc')
     config_file = home.join('.config', 'reentry', 'config')
+    # pylint: disable=no-else-return
     if home.exists():
         return rc_file
     elif config_file.exists():
@@ -28,6 +30,7 @@ def find_config():
 
 def make_config_parser(*args, **kwargs):
     """Get the correct ConfigParser class depending on python version."""
+    # pylint: disable=no-else-return
     if six.PY2:
         return configparser.SafeConfigParser(*args, **kwargs)
     elif six.PY3:
@@ -53,7 +56,10 @@ def get_config(config_file_name=find_config().strpath):
 
 
 def make_data_file_name():
-    """Find the path to the reentry executable and mangle it into a file name."""
+    """Find the path to the reentry executable and mangle it into a file name.
+
+    Note: In order to avoid long filenames (e.g. on conda forge), the relevant info is hashed.
+    """
     sep = os.path.sep
     python_bin_dir = py_path.local(sys.executable).dirname
     py_version = 'UNKNOWN'
@@ -62,7 +68,9 @@ def make_data_file_name():
     elif six.PY3:
         py_version = 'PY3'
     file_name = python_bin_dir.lstrip(sep).replace(sep, '.').replace('.', '_') + '_' + py_version
-    return file_name
+
+    file_name_hash = hashlib.sha256(file_name.encode('utf-8'))
+    return file_name_hash.hexdigest()
 
 
 def get_datafile():

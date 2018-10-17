@@ -116,16 +116,18 @@ class JsonBackend(BackendInterface):
                 spc = self.get_ep(group, name, dist=dist_name)
                 if spc:
                     specs.append(spc)
+            # pylint: disable=no-else-return
             if len(specs) > 1:
                 return specs
             elif len(specs) == 1:
                 return specs[0]
-        else:
-            distribution_map = self._epmap.get(dist, {})
-            group_map = distribution_map.get(group, {})
-            spec = group_map.get(name)
-            if spec:
-                return EntryPoint.parse(spec)
+
+        distribution_map = self._epmap.get(dist, {})
+        group_map = distribution_map.get(group, {})
+        spec = group_map.get(name)
+        if spec:
+            return EntryPoint.parse(spec)
+
         return None
 
     def get_dist_names(self):
@@ -284,6 +286,7 @@ class JsonBackend(BackendInterface):
 def _listify(sequence_or_name):
     """Wrap a single name in a list, leave sequences and None unchanged"""
     from collections import Sequence
+    # pylint: disable=no-else-return
     if sequence_or_name is None:
         return None
     elif not isinstance(sequence_or_name, Sequence) or isinstance(sequence_or_name, six.string_types):

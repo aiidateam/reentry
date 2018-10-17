@@ -1,18 +1,18 @@
 repos:
 - repo: git://github.com/pre-commit/mirrors-yapf
-  sha: v0.21.0
+  sha: v0.24.0
   hooks:
   - id: yapf
     language: system
 
-- repo: git://github.com/guykisel/prospector-mirror
-  sha: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+- repo: local
   hooks:
   - id: prospector
     language: system
-
-- repo: local
-  hooks:
+    types: [file, python]
+    name: prospector
+    description: "This hook runs Prospector: https://github.com/landscapeio/prospector"
+    entry: prospector
   - id: travis-linter
     name: travis
     entry: travis lint
