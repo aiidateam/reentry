@@ -1,3 +1,4 @@
 include README.rst
 include LICENSE
+include setup.json
 recursive-include reentry tests/*json
