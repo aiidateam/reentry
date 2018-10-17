@@ -29,8 +29,7 @@
         "setuptools >= 36.2",
         "click",
         "six",
-        "pathlib ; python_version<'3.5'",
-        "py"
+        "pathlib2; python_version < '3.5'"
     ],
     "extras_require": {
         "dev": [

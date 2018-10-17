@@ -7,6 +7,7 @@ import fileinput
 import contextlib
 import subprocess
 try:
+    # prefer the backport for Python <3.5
     from pathlib2 import Path
 except ImportError:
     from pathlib import Path

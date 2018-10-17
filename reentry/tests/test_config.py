@@ -1,9 +1,11 @@
 # pylint: disable=unused-import,redefined-outer-name
 """Unit tests for config tools."""
 try:
+    # prefer the backport for Python <3.5
     from pathlib2 import Path
 except ImportError:
     from pathlib import Path
+
 import pytest  # pylint: disable=unused-import
 import six
 from six.moves import configparser
