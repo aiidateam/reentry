@@ -60,12 +60,12 @@ class VersionUpdater(object):
 
     def write_to_setup(self):
         """Write the updated version number to setup.json."""
-        with self.setup_json.open('r') as setup_fo:
+        with open(str(self.setup_json), 'r') as setup_fo:
             # preserve order
             setup = json.load(setup_fo, object_pairs_hook=collections.OrderedDict)
 
         setup['version'] = str(self.version)
-        with self.setup_json.open('w') as setup_fo:
+        with open(str(self.setup_json), 'w') as setup_fo:
             json.dump(setup, setup_fo, indent=4, separators=(',', ': '))
 
     @property
@@ -75,7 +75,7 @@ class VersionUpdater(object):
     @property
     def setup_version(self):
         """Grab the parsed version from setup.json."""
-        with self.setup_json.open('r') as setup_fo:
+        with open(str(self.setup_json), 'r') as setup_fo:
             setup = json.load(setup_fo)
 
         try:
