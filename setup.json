@@ -26,10 +26,10 @@
         "Topic :: Software Development"
     ],
     "install_requires": [
-        "setuptools >= 18.5",
+        "setuptools >= 36.2",
         "click",
         "six",
-        "py"
+        "pathlib2; python_version < '3.5'"
     ],
     "extras_require": {
         "dev": [

@@ -1,7 +1,12 @@
 # pylint: disable=unused-import,redefined-outer-name
 """Unit tests for config tools."""
+try:
+    # prefer the backport for Python <3.5
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
+
 import pytest  # pylint: disable=unused-import
-from py import path as py_path  # pylint: disable=no-name-in-module
 import six
 from six.moves import configparser
 
@@ -10,7 +15,7 @@ from reentry import config
 
 def test_find_config():
     config_file = config.find_config()
-    assert isinstance(config_file, py_path.local)
+    assert isinstance(config_file, Path)
 
 
 def test_make_config_parser():
@@ -35,7 +40,7 @@ def test_get_config():
 
 
 def test_get_datafile():
-    datafile = py_path.local(config.get_datafile())
+    datafile = Path(config.get_datafile())
 
-    assert datafile.isfile()
+    assert datafile.is_file()
     assert datafile.exists()
