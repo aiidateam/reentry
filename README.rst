@@ -14,11 +14,15 @@ Features
 --------
 
 * finding plugins: reentry keeps a map of entry points in a file
-* speed: reentry provides an EntryPoint implementation that trades extras for search and load speed
+* speed: reentry provides an EntryPoint implementation that trades extra checks for search and load speed
 * automatic registering: use ``reentry_register`` in your ``setup.py`` to automatically register plugins
 * automatic scanning: use ``reentry_scan`` in your ``setup.py`` to automatically discover previously installed plugins
 
-Note that ``reentry_register`` and ``reentry_scan`` create a build-time dependency on ``reentry``. The suggested way to resolve that is using the method described in `PEP518 <https://www.python.org/dev/peps/pep-0518/>`_, for which `support has been added in pip 10 <https://pip.pypa.io/en/latest/reference/pip/#pep-518-support>`_: next to ``setup.py``, put a file ``pyproject.toml`` containing::
+Note that ``reentry_register`` and ``reentry_scan`` create a *build-time*
+dependency on ``reentry``. The suggested way to resolve that is using the
+method described in `PEP518 <https://www.python.org/dev/peps/pep-0518/>`_, for
+which `support has been added in pip 10 <https://pip.pypa.io/en/latest/reference/pip/#pep-518-support>`_: 
+next to ``setup.py``, put a file ``pyproject.toml`` containing::
 
    [build-system]
    # Minimum requirements for the build system to execute.
@@ -32,13 +36,14 @@ An alternative way for specifying a build dependency is to put::
       ...
    )
 
-in your ``setup.py``, this works with all versions of ``pip``, but fails on systems, where python is linked to old ``SSL`` libraries (like system python for some versions of OS X).
+in your ``setup.py``. 
+This works with all versions of ``pip``, but fails on systems, where python is
+linked to old ``SSL`` libraries (such as the system python for some versions of
+OS X).
 
 Limitations
 -----------
 
-* 
-* entry points with extras dependencies still work trying to load them will lead to loading pkg_resources
 * automatic scanning does not discover plugins installed during the same invocation of ``pip``::
 
    pip install plugin host
@@ -49,6 +54,11 @@ will not work, if ``plugin`` does not ``reentry_register``, and ``host`` does ``
    pip install host
 
 Will work.
+
+* entry points with extras dependencies (``name = module_name:attrs [extras]``)
+  are still supported. Trying to load them, however, will lead to importing ``pkg_resources`` and
+  forego the speedup.
+
 
 Quickstart
 ----------
