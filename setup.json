@@ -33,10 +33,11 @@
     ],
     "extras_require": {
         "dev": [
-            "pre-commit",
-            "prospector==0.12.11",
+            "pre-commit==1.14.4",
+            "prospector==1.1.5",
+            "pylint==1.9.4; python_version<'3.0'",
+            "pylint==2.3.1; python_version>='3.0'",
             "yapf==0.27.0",
-            "pylint",
             "flake8",
             "pytest",
             "coverage",
