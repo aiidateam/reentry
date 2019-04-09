@@ -33,7 +33,7 @@ def main(with_noreg):
         print('\nCurrent relevant entry point map:\n\n')
         print(manager.format_map(entry_point_map))
         print('\n')
-        scan_map = manager.scan(groups=['reentry_test'], nocommit=True)
+        scan_map = manager.scan(groups=['reentry_test'], commit=False)
         print('\nFull entry point map after scan:\n\n')
         print(manager.format_map(scan_map))
         raise err
