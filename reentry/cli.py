@@ -50,6 +50,15 @@ def map_(dist, group, name):
     click.echo(pprint.pformat(res))
 
 
+@reentry.command('clear')
+def clear():
+    """
+    Clear entry point map.
+    """
+    from reentry import manager
+    manager.clear()
+
+
 @reentry.group('dev')
 def dev():
     """Development related commands."""
