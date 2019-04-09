@@ -91,45 +91,53 @@ class PluginManager(object):
         self._backend.write_dist_map(dist_name, entry_point_map)
         return dist_name, entry_point_map
 
-    def scan(self, groups=None, group_re=None, commit=True, delete=True):
+    def scan(self, groups=None, group_re=None, commit=True, delete=True):  # pylint: disable=too-many-branches
         """Walk through all distributions available and register entry points.
 
         Note: This imports pkg_resources.
-        
+
         :param groups: a list of group names to register entry points for.
             If None, registers all entry points found.
         :param group_re: a regular expression for group names.
             Groups matched by the regular expression are appended to `groups`
+        :type group_re: str or a compiled expression from re.compile
         :param commit: If False, performs just a dry run
         :param delete: If False, append to existing entry point map
         """
         import pkg_resources as pr
         pr_env = pr.AvailableDistributions()
         pr_env.scan()
-        if not groups and group_re:
-            groups = []
+
+        groups = groups or []
 
         if group_re:
+            all_groups = self.scan_all_group_names()
             if isinstance(group_re, six.string_types):
                 group_re = re.compile(group_re)
-            all_groups = self.scan_all_group_names()
             groups.extend({group for group in all_groups if group_re.match(group)})
 
-        if commit and delete:
-            if groups:
-                for group in groups:
-                    self._backend.rm_group(group)
-            else:
-                self.clear()
+        if delete:
+            full_map = {}
 
-        full_map = {}
+            if commit:
+                if groups:
+                    for group in groups:
+                        self._backend.rm_group(group)
+                else:
+                    self.clear()
 
-        if not delete:
+        else:
             full_map = self._backend.epmap.copy()
 
         # ~ for dists in pr_env._distmap.values():  # pylint: disable=protected-access
         for dist in pr_env:
-            dname, emap = self._backend.scan_dist(dist)
+            # note: in pip 19, the *installing* distribution is part of pr_env but
+            # pkg_resources.get_distribution() fails on it
+            try:
+                dname, emap = self._backend.scan_dist(dist)
+            except pr.DistributionNotFound:
+                continue
+
             dmap = full_map.get(dname, {})
             if groups:
                 new_dmap = {k: v for k, v in six.iteritems(emap) if k in groups}

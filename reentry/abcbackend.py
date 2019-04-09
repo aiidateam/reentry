@@ -66,9 +66,7 @@ class BackendInterface(object):
         """Add an incomplete distribution as passed by setuptools during it's installation."""
 
     def scan_dist(self, distribution):
-        """
-        take a distribution's project name, add the distribution
-        """
+        """Take a distribution's project name, add the distribution."""
         if isinstance(distribution, six.string_types):
             dist_name, entry_point_map = self.scan_st_dist(distribution)
         else:
