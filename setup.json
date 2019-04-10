@@ -6,8 +6,7 @@
     "description": "A plugin manager based on setuptools entry points mechanism",
     "entry_points": {
         "distutils.setup_keywords": [
-            "reentry_register = reentry.hooks:register_dist",
-            "reentry_scan = reentry.hooks:scan_for_installed"
+            "reentry_register = reentry.hooks:register_dist"
         ],
         "console_scripts": [
             "reentry = reentry.cli:reentry"
