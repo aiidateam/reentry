@@ -16,4 +16,4 @@ script:
   - if [ "$TEST_TYPE" == "pre-commit" ] ; then pre-commit run --all-files || ( git diff; pip freeze | grep yapf; exit 1; ) ; fi
 
 after_success:
-  - reentry dev coveralls
+  - if [ "$TEST_TYPE" == "unittests" ] ; then reentry dev coveralls; fi
