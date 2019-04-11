@@ -84,8 +84,9 @@ def make_data_file_name():
 def hashed_data_file_name():
     """Find the path to the reentry executable and mangle it into a file name."""
 
-    fname = 'u{bin_dir}_{impl}-{ver}'.format(
-        bin_dir=Path(sys.executable).resolve().parent, impl=platform.python_implementation(), ver=platform.python_version())
+    fname = 'u{bin_dir}_{impl}-{ver}'.format(bin_dir=Path(sys.executable).resolve().parent,
+                                             impl=platform.python_implementation(),
+                                             ver=platform.python_version())
 
     path_hash = hashlib.sha256(fname.encode('utf-8'))
     return path_hash.hexdigest()

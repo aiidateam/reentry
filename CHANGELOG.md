@@ -4,7 +4,25 @@ All notable changes to this project after version 1.0.3 will be documented in th
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.3.0] - 2019-04-10
+
+### Changed
+ - drop support for `reentry_scan` hook since pip 19 introduced build-system isolation that restricts 
+   scans performed by the hook to the build-system (containing only setuptools, wheel, reentry, etc.).
+ - `manager.scan`: renamed negated options (`nocommit` => `commit`, `nodelete` => `delete`)
+
+### Added
+ - add `reentry clear` command to clear the reentry cache
+
+## [1.2.2] - 2018-10-07
+
+### Changed
+ - replace py with pathlib/pathlib2, reducing dependencies for python 3
+ - config file: 
+   - use hashed (shorter) filename
+   - resolve symlinks in file path
+   - recognize `XDG_CONFIG_HOME` environment variable
+ - move entry points, classifiers etc. to `setup.json` file
 
 ## [1.2.1] - 2018-06-11
 
@@ -56,4 +74,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - reentry can now cache entry points even if the user has no write permission in it's install dir
  - JsonBackend API: small changes to the distribution writing methods
 
- ## [v1.0.3]
+## [1.0.3]

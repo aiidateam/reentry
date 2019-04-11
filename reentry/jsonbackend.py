@@ -43,9 +43,7 @@ class JsonBackend(BackendInterface):
 
     @staticmethod
     def scan_pr_dist(dist):
-        """
-        add a distribution, empty by default
-        """
+        """Add a distribution, empty by default."""
         dname = dist.project_name
         epmap = dist.get_entry_map()
         return dname, epmap

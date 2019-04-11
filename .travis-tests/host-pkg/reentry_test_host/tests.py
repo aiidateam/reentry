@@ -1,4 +1,7 @@
-"""Test main for integration test, requires the test plugin to be installed first."""
+"""CLI for reentry integration test.
+
+Note: This requires the test packages in .travis-tests/ to be installed first.
+"""
 from __future__ import print_function
 
 import click
@@ -20,20 +23,21 @@ def main(with_noreg):
     entry_point_map = manager.get_entry_map(groups='reentry_test', ep_names=['test-plugin', 'test-noreg', 'builtin'])
     data_file = Path(get_datafile())
 
-    assert entry_point_map, 'The test plugin entry point were not found\nMap:\n{}\n\nData File: {}\n\nContents:\n{}'.format(
+    assert entry_point_map, 'The \'reentry_test\' entry point group was not found\nMap:\n{}\n\nData File: {}\n\nContents:\n{}'.format(
         manager.get_entry_map(), str(data_file), data_file.read_text())
 
     try:
         test_entry_point = entry_point_map['reentry_test']['test-plugin']
         builtin_entry_point = entry_point_map['reentry_test']['builtin']
         if with_noreg:
+            # note: `reentry scan` for this work
             noreg_entry_point = entry_point_map['reentry_test']['test-noreg']
     except Exception as err:
         print('datafile: {}'.format(str(data_file)))
         print('\nCurrent relevant entry point map:\n\n')
         print(manager.format_map(entry_point_map))
         print('\n')
-        scan_map = manager.scan(groups=['reentry_test'], nocommit=True)
+        scan_map = manager.scan(groups=['reentry_test'], commit=False)
         print('\nFull entry point map after scan:\n\n')
         print(manager.format_map(scan_map))
         raise err

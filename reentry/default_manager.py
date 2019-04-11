@@ -38,12 +38,15 @@ class PluginManager(object):
 
     def iter_entry_points(self, group, name=None):
         """
-        Iterate over all registered entry points in `group`, or if `name` is given, only the ones matching `name`.
+        Iterate over all registered entry points in `group`, or if `name` is
+        given, only the ones matching `name`.
 
-        If no entry point (or none called `name`), a scan is triggered, which may take a while. This behaviour can be configured when
-        creating the plugin manager.
+        If no entry point is found in the group (or none called `name`), a scan
+        is triggered, which may take a while. This behaviour can be configured
+        when creating the plugin manager.
 
-        The backend may only load pkg_resources if any of the entry points contain extras requirements
+        The backend may only import pkg_resources if any of the entry points
+        contain extras requirements.
         """
         if self._scan_for_not_found:
             if not self.get_entry_map(groups=[group]):
@@ -88,35 +91,53 @@ class PluginManager(object):
         self._backend.write_dist_map(dist_name, entry_point_map)
         return dist_name, entry_point_map
 
-    def scan(self, groups=None, group_re=None, nocommit=False, nodelete=False):
-        """Walk through all distributions available and registers entry points or only those in `groups`."""
+    def scan(self, groups=None, group_re=None, commit=True, delete=True):  # pylint: disable=too-many-branches
+        """Walk through all distributions available and register entry points.
+
+        Note: This imports pkg_resources.
+
+        :param groups: a list of group names to register entry points for.
+            If None, registers all entry points found.
+        :param group_re: a regular expression for group names.
+            Groups matched by the regular expression are appended to `groups`
+        :type group_re: str or a compiled expression from re.compile
+        :param commit: If False, performs just a dry run
+        :param delete: If False, append to existing entry point map
+        """
         import pkg_resources as pr
         pr_env = pr.AvailableDistributions()
         pr_env.scan()
-        if not groups and group_re:
-            groups = []
+
+        groups = groups or []
 
         if group_re:
+            all_groups = self.scan_all_group_names()
             if isinstance(group_re, six.string_types):
                 group_re = re.compile(group_re)
-            all_groups = self.scan_all_group_names()
             groups.extend({group for group in all_groups if group_re.match(group)})
 
-        if not nocommit and not nodelete:
-            if groups:
-                for group in groups:
-                    self._backend.rm_group(group)
-            else:
-                self._backend.clear()
+        if delete:
+            full_map = {}
 
-        full_map = {}
+            if commit:
+                if groups:
+                    for group in groups:
+                        self._backend.rm_group(group)
+                else:
+                    self.clear()
 
-        if nodelete:
+        else:
             full_map = self._backend.epmap.copy()
 
         # ~ for dists in pr_env._distmap.values():  # pylint: disable=protected-access
         for dist in pr_env:
-            dname, emap = self._backend.scan_dist(dist)
+            # note: in pip 19, the *installing* distribution is part of pr_env but
+            # pkg_resources.get_distribution() fails on it
+            try:
+                dname, emap = self._backend.scan_dist(dist)
+            except pr.DistributionNotFound:
+                continue
+
             dmap = full_map.get(dname, {})
             if groups:
                 new_dmap = {k: v for k, v in six.iteritems(emap) if k in groups}
@@ -127,7 +148,7 @@ class PluginManager(object):
             # extract entry points that are reserved for other purposes unless excepted
             dmap = clean_map(dmap, exceptions=groups)
 
-            if not nocommit:
+            if commit:
                 self._backend.write_dist_map(dname, entry_point_map=dmap)
             full_map[dname] = [dmap]
 
@@ -151,6 +172,10 @@ class PluginManager(object):
         The backend may load pkg_resources to resolve the distribution name
         """
         self._backend.rm_dist(distname)
+
+    def clear(self):
+        """Clear entry point map."""
+        self._backend.clear()
 
     @property
     def distribution_names(self):
