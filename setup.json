@@ -1,6 +1,6 @@
 {
     "name": "reentry",
-    "version": "1.3.0a1",
+    "version": "1.3.0",
     "author": "Rico Haeuselmann",
     "license": "MIT License",
     "description": "A plugin manager based on setuptools entry points mechanism",
