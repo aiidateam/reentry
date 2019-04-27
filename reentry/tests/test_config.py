@@ -37,6 +37,7 @@ def test_get_config():
         assert isinstance(parser, configparser.ConfigParser)
 
     assert parser.get('general', 'datadir')
+    assert parser.get('general', 'data_filename')
 
 
 def test_get_datafile():
