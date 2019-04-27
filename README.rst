@@ -20,7 +20,7 @@ Features
 Note that ``reentry_register`` creates a *build-time*
 dependency on ``reentry``. The suggested way to resolve that is using the
 method described in `PEP518 <https://www.python.org/dev/peps/pep-0518/>`_, for
-which `support has been added in pip 10 <https://pip.pypa.io/en/latest/reference/pip/#pep-518-support>`_: 
+which `support has been added in pip 10 <https://pip.pypa.io/en/latest/reference/pip/#pep-518-support>`_:
 next to ``setup.py``, put a file ``pyproject.toml`` containing::
 
    [build-system]
@@ -35,7 +35,7 @@ An alternative way for specifying a build dependency is to put::
       ...
    )
 
-in your ``setup.py``. 
+in your ``setup.py``.
 This alternative works with all versions of ``pip``, but fails on systems,
 where python is linked to old ``SSL`` libraries (such as the system python for
 some versions of OS X).
@@ -80,6 +80,39 @@ The syntax is consistent with ``setuptools``'s ``pkg_resources``, so you may use
    entry_pt_manager.iter_entry_points(...)
    ...
 
+Reentry Configuration
+---------------------
+Reentry supports getting information from a configuration file. The file will
+be searched at the following paths:
+
+* <HOME>/.reentryrc
+* <HOME>/.config/reentry/config
+
+The configuration file has an ``ini`` format and supports the following keys::
+
+   [general]
+   datadir=/path/to/data/dir
+   data_filename=name
+
+The ``datadir`` is the folder in which ``reentry`` stores the data file
+that contains the information about the registered entry points.
+If the config file doesn't exist in one of the above paths, the ``datadir`` is
+set to ``<HOME>/.config/reentry/data``.
+``data_filename`` is the name of the data file, in case you want to pick the
+name by your own instead of letting ``reentry`` choose it.
+Warning: By default, ``reentry`` creates a separate data file for every python
+interpreter in order not to mix entry points between different python
+environments on your system. Setting a ``data_filename`` in the configuration
+file tells ``reentry`` to *always* use this data file and may result in
+unexpected behavior if you use ``reentry`` in multiple python environments.
+
+You can also set configuration options for ``reentry`` via environment
+variables:
+
+* ``datadir`` can be defined by ``REENTRY_DATADIR``.
+* ``data_filename`` can be defined by ``REENTRY_DATA_FILENAME``.
+
+Environment variables take precedence over the configuration file.
 
 What for?
 ---------
@@ -112,20 +145,20 @@ Standalone Manager Usage
 
 Sometimes it might be necessary to update the cached entry points, for example
 
-   * after uninstalling a plugin (there are no uninstall hooks by setuptools at the moment)
-   * after installing a plugin that does not use install hooks
-   * while developing a plugin / plugin host
+* after uninstalling a plugin (there are no uninstall hooks by setuptools at the moment)
+* after installing a plugin that does not use install hooks
+* while developing a plugin / plugin host
 
 for those cases reentry has a commandline interface::
 
    $ reentry --help
    Usage: reentry [OPTIONS] COMMAND [ARGS]...
-   
+
      manage your reentry python entry point cache
-   
+
    Options:
      --help  Show this message and exit.
-   
+
    Commands:
      clear  Clear entry point map.
      dev    Development related commands.
@@ -149,7 +182,7 @@ for those cases reentry has a commandline interface::
 
    $ reentry map --help
    Usage: reentry map [OPTIONS]
-   
+
    Options:
      --dist TEXT   limit map to a distribution
      --group TEXT  limit map to an entry point group
