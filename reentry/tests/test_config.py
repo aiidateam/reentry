@@ -6,8 +6,8 @@ try:
 except ImportError:
     from pathlib import Path
 
-import pytest  # pylint: disable=unused-import
 import os
+import pytest  # pylint: disable=unused-import
 import six
 from six.moves import configparser
 
@@ -27,7 +27,12 @@ def test_make_config_parser():
     else:
         assert isinstance(parser, configparser.ConfigParser)
 
+
 def _check_config_valid(parser, expected_filename=None):
+    """
+    Perform validations for a given config.
+    If expected_filename is given, check its value too.
+    """
     if six.PY2:
         assert isinstance(parser, configparser.SafeConfigParser)
     else:
@@ -38,13 +43,14 @@ def _check_config_valid(parser, expected_filename=None):
     if expected_filename:
         assert parser.get('general', 'data_filename') == expected_filename
 
+
 def test_get_config():
     """Make sure the configparser gets created correctly."""
     parser = config.get_config()
     _check_config_valid(parser)
 
 
-def test_get_config_with_data_filename():
+def test_get_config_with_env_var():
     """Make sure the configparser gets created correctly when REENTRY_DATA_FILENAME is set."""
     data_filename = 'entrypoints'
     os.environ['REENTRY_DATA_FILENAME'] = data_filename
