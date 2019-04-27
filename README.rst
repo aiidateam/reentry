@@ -85,11 +85,10 @@ Reentry Configuration
 Reentry supports getting information from a configuration file. The file will
 be searched at the following paths:
 
-   * <HOME>/.reentryrc
-   * <HOME>/.config/reentry/config
+* <HOME>/.reentryrc
+* <HOME>/.config/reentry/config
 
-The configuration file has an ``ini`` format and currently supports the
-following structure::
+The configuration file has an ``ini`` format and supports the following keys::
 
    [general]
    datadir=/path/to/data/dir
@@ -97,25 +96,23 @@ following structure::
 
 The ``datadir`` is the folder in which ``reentry`` stores the data file
 that contains the information about the registered entry points.
-``data_filename`` is the name of the data file, in case you want to pick the
-name by your own instead of letting ``reentry`` choose it.
-Pay attention: if you choose to set a constant file name for the data file,
-it means that all the entrypoints on the system will be shared, even if they
-were created by different Python interpreters. By default, ``reentry`` creates
-a separate data file for every python interpreter you use so you can register
-different sets of plugins for the same package in different environments.
-
 If the config file doesn't exist in one of the above paths, the ``datadir`` is
 set to ``<HOME>/.config/reentry/data``.
+``data_filename`` is the name of the data file, in case you want to pick the
+name by your own instead of letting ``reentry`` choose it.
+Warning: By default, ``reentry`` creates a separate data file for every python
+interpreter in order not to mix entry points between different python
+environments on your system. Setting a ``data_filename`` in the configuration
+file tells ``reentry`` to *always* use this data file and may result in
+unexpected behavior if you use ``reentry`` in multiple python environments.
 
 You can also set configuration options for ``reentry`` via environment
 variables:
 
-   * ``datadir`` can be defined by ``REENTRY_DATADIR``.
-   * ``data_filename`` can be defined by ``REENTRY_DATA_FILENAME``.
+* ``datadir`` can be defined by ``REENTRY_DATADIR``.
+* ``data_filename`` can be defined by ``REENTRY_DATA_FILENAME``.
 
-If one of these environment variables is defined, it takes precendence over
-the configuration file values.
+Environment variables take precedence over the configuration file.
 
 What for?
 ---------
@@ -148,9 +145,9 @@ Standalone Manager Usage
 
 Sometimes it might be necessary to update the cached entry points, for example
 
-   * after uninstalling a plugin (there are no uninstall hooks by setuptools at the moment)
-   * after installing a plugin that does not use install hooks
-   * while developing a plugin / plugin host
+* after uninstalling a plugin (there are no uninstall hooks by setuptools at the moment)
+* after installing a plugin that does not use install hooks
+* while developing a plugin / plugin host
 
 for those cases reentry has a commandline interface::
 
