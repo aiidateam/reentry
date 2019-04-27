@@ -49,8 +49,7 @@ def make_config_parser(*args, **kwargs):
 def get_config(config_file_name=str(find_config())):
     """Create config parser with defaults and read in the config file."""
     default_config_dir = _get_default_config_dir()
-    default_config_values = {'datadir': str(default_config_dir.joinpath('data')),
-                             'data_filename': hashed_data_file_name()}
+    default_config_values = {'datadir': str(default_config_dir.joinpath('data')), 'data_filename': hashed_data_file_name()}
     parser = make_config_parser(default_config_values)
     parser.add_section('general')
     parser.read([config_file_name])
