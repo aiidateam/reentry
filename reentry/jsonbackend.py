@@ -282,10 +282,10 @@ class JsonBackend(BackendInterface):
 
 def _listify(sequence_or_name):
     """Wrap a single name in a list, leave sequences and None unchanged"""
-    from collections import Sequence  # pylint: disable=no-name-in-module
-    # pylint: disable=no-else-return
+    from six.moves import collections_abc
+
     if sequence_or_name is None:
         return None
-    elif not isinstance(sequence_or_name, Sequence) or isinstance(sequence_or_name, six.string_types):
+    if not isinstance(sequence_or_name, collections_abc.Sequence) or isinstance(sequence_or_name, six.string_types):
         return [sequence_or_name]
     return sequence_or_name
