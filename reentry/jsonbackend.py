@@ -195,8 +195,7 @@ class JsonBackend(BackendInterface):
         for distribution in distribution_list:
             if distribution not in self._epmap:
                 raise ValueError("The {} distribution was not found.".format(distribution))
-            else:
-                group_set.update([group_name for group_name in self._epmap[distribution].keys() if group_name in group_list])
+            group_set.update([group_name for group_name in self._epmap[distribution].keys() if group_name in group_list])
         return group_set
 
     def _filter_entry_points(self, dist_list, group_list, name_list):
@@ -283,7 +282,7 @@ class JsonBackend(BackendInterface):
 
 def _listify(sequence_or_name):
     """Wrap a single name in a list, leave sequences and None unchanged"""
-    from collections import Sequence
+    from collections import Sequence  # pylint: disable=no-name-in-module
     # pylint: disable=no-else-return
     if sequence_or_name is None:
         return None

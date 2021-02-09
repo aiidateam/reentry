@@ -14,5 +14,12 @@
         "groupC": {
             "distB.epC": "distB.epC = pkgB.moduleC:ClassC"
         }
+    },
+    "dist-C": {
+        "groupD": {
+            "distB.epB": "distC.epB = pkgC.moduleB:ClassB"
+        }
+    },
+    "dist_C": {
     }
 }
