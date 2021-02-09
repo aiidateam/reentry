@@ -282,7 +282,7 @@ class JsonBackend(BackendInterface):
 
 def _listify(sequence_or_name):
     """Wrap a single name in a list, leave sequences and None unchanged"""
-    from collections import Sequence  # pylint: disable=no-name-in-module
+    from collections.abc import Sequence
     # pylint: disable=no-else-return
     if sequence_or_name is None:
         return None
