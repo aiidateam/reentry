@@ -1,7 +1,5 @@
 """Command line interface for reentry"""
 import sys
-import os
-import subprocess
 
 import click
 
@@ -66,15 +64,6 @@ def dev():
 
 def echo_call(cmd):
     click.echo('calling: {}'.format(' '.join(cmd)), err=True)
-
-
-@dev.command()
-def coveralls():
-    """Run coveralls only on travis."""
-    if os.getenv('TRAVIS'):
-        cmd = ['coveralls']
-        echo_call(cmd)
-        subprocess.call(cmd)
 
 
 @dev.command('datafile')

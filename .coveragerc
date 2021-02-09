@@ -1,6 +1,7 @@
 [run]
 source = reentry
 omit = *test*
+relative_files = True
 
 [html]
 directory = coverage/html

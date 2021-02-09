@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/DropD/reentry.svg?branch=master
-    :target: https://travis-ci.org/DropD/reentry
+.. image:: https://github.com/dropd/reentry/workflows/ci/badge.svg
+    :target: https://github.com/dropd/reentry/actions
 
 .. image:: https://coveralls.io/repos/github/DropD/reentry/badge.svg
    :target: https://coveralls.io/github/DropD/reentry
