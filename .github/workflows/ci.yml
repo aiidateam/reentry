@@ -20,7 +20,7 @@ jobs:
     - name: Install python dependencies
       run: |
         pip install --upgrade pip
-        pip install -e .[dev]
+        pip install -e .[tests]
         pip install tox coveralls
 
     - name: Run test suite
@@ -49,7 +49,7 @@ jobs:
     - name: Install python dependencies
       run: |
         pip install --upgrade pip
-        pip install -e .[dev]
+        pip install -e .[tests,pre-commit]
 
     - name: Run pre-commit checks
       env:

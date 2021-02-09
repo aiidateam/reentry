@@ -31,13 +31,17 @@
         "pathlib2; python_version < '3.5'"
     ],
     "extras_require": {
-        "dev": [
-            "pre-commit~=2.2",
-            "pylint~=2.6.0",
-            "flake8",
+        "tests": [
             "pytest",
             "coverage",
             "pytest-cov",
+            "wheel",
+            "tox"
+        ],
+        "pre-commit": [
+            "pre-commit~=2.2",
+            "pylint~=2.6.0",
+            "flake8",
             "tox",
             "packaging"
         ]
