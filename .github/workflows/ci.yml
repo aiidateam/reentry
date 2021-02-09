@@ -21,18 +21,18 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install -e .[tests]
-        pip install tox coveralls
+        pip install tox
 
     - name: Run test suite
       env:
         TEST_TYPE: unittests
       run: ./run_tests.sh
 
-    - name: Upload coverage report
+    - name: Coveralls
       if: github.repository == 'dropd/reentry'
-      env:
-        GITHUB: 1
-      run: reentry dev coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
   pre-commit:
