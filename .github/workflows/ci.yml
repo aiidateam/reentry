@@ -30,6 +30,8 @@ jobs:
 
     - name: Upload coverage report
       if: github.repository == 'dropd/reentry'
+      env:
+        GITHUB: 1
       run: reentry dev coveralls
 
 

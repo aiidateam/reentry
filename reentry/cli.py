@@ -70,8 +70,8 @@ def echo_call(cmd):
 
 @dev.command()
 def coveralls():
-    """Run coveralls only on travis."""
-    if os.getenv('TRAVIS'):
+    """Run coveralls only on GitHub Actions."""
+    if os.getenv('GITHUB'):
         cmd = ['coveralls']
         echo_call(cmd)
         subprocess.call(cmd)
