@@ -214,3 +214,15 @@ Reentry provides a drop-in replacement for iter_entry_points::
 
 For this to work, reentry has to be installed and must have been used to
 scan for entry points in the 'cli_plugins' group once.
+
+
+Development 
+-----------
+
+Running the tests::
+
+    tox
+
+Creating a release::
+
+    tox -e py39-release
