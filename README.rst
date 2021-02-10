@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/DropD/reentry.svg?branch=master
-    :target: https://travis-ci.org/DropD/reentry
+.. image:: https://github.com/dropd/reentry/workflows/ci/badge.svg
+    :target: https://github.com/dropd/reentry/actions
 
 .. image:: https://coveralls.io/repos/github/DropD/reentry/badge.svg
    :target: https://coveralls.io/github/DropD/reentry
@@ -214,3 +214,15 @@ Reentry provides a drop-in replacement for iter_entry_points::
 
 For this to work, reentry has to be installed and must have been used to
 scan for entry points in the 'cli_plugins' group once.
+
+
+Development 
+-----------
+
+Running the tests::
+
+    tox
+
+Creating a release::
+
+    tox -e py39-release

@@ -1,6 +1,6 @@
 """CLI for reentry integration test.
 
-Note: This requires the test packages in .travis-tests/ to be installed first.
+Note: This requires the test packages in .github/ to be installed first.
 """
 from __future__ import print_function
 
