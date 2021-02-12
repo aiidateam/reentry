@@ -1,8 +1,8 @@
-.. image:: https://github.com/dropd/reentry/workflows/ci/badge.svg
-    :target: https://github.com/dropd/reentry/actions
+.. image:: https://github.com/aiidateam/reentry/workflows/ci/badge.svg
+    :target: https://github.com/aiidateam/reentry/actions
 
-.. image:: https://coveralls.io/repos/github/DropD/reentry/badge.svg
-   :target: https://coveralls.io/github/DropD/reentry
+.. image:: ihttps://codecov.io/gh/aiidateam/reentry/branch/develop/graph/badge.svg
+   :target: https://codecov.io/gh/aiidateam/reentry
 
 =======
 Reentry
