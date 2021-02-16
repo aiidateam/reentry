@@ -26,10 +26,16 @@ jobs:
     - name: Run test suite
       env:
         TEST_TYPE: unittests
+        PYTEST_ADDOPTS: "--cov-report xml"
       run: ./run_tests.sh
 
-    - name: Coveralls
-      uses: AndreMiras/coveralls-python-action@develop
+    - name: Upload coverage report
+      if: github.repository == 'aiidateam/reentry'
+      uses: codecov/codecov-action@v1
+      with:
+        name: aiida-py${{ matrix.python-version }}
+        #file: ./coverage.xml
+        fail_ci_if_error: false  # don't fail job, if coverage upload fails
 
   pre-commit:
     runs-on: ubuntu-latest
