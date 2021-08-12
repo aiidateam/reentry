@@ -10,6 +10,51 @@ Reentry
 
 A plugin manager based on setuptools entry points with 10x the speed
 
+Archival notice
+----------------
+
+Python 3.8 saw the introduction of [`importlib.metadata`](https://docs.python.org/3/library/importlib.metadata.html) into the Python standard library.
+It is both fast to `import importlib.metadata` and fast to scan for entry points using the `entry_points()` function, thus making the existence of `reentry` less necessary.
+
+The separate [importlib-metadata](https://pypi.org/project/importlib-metadata/) package backports this functionality to python >=3.6, and as of version 4.6.3 (or earlier), scanning is even faster than with the standard library.
+
+The following are benchmarks on an MacBook Air M1 (2020) in a python 3.9.1 conda environment with 248 packages installed (~30 of which register entry points).
+
+`pkg_resources`: ~147 msec in total
+```
+$ python -mtimeit -n1 -r1 'import pkg_resources'
+1 loop, best of 1: 146 msec per loop
+$ python -mtimeit -s 'import pkg_resources as pkg' 'pkg.iter_entry_points("aiida.calculations")'
+500000 loops, best of 5: 435 nsec per loop
+```
+
+`importlib.metadata`: ~39 msec in total
+```
+$ python -mtimeit -n1 -r1 'import importlib.metadata'
+1 loop, best of 1: 17.8 msec per loop
+$ python -mtimeit -s 'import importlib.metadata as im' 'im.entry_points()'
+50 loops, best of 5: 21.4 msec per loop
+```
+
+`importlib-metadata` package (v4.6.3): ~40 msec in total
+```
+$ python -mtimeit -n1 -r1 'import importlib_metadata'
+1 loop, best of 1: 33.8 msec per loop
+$ python -mtimeit -s 'import importlib_metadata as im' 'im.entry_points()'
+50 loops, best of 5: 5.94 msec per loop
+```
+
+`reentry` (v1.3.1: 25 msec in total
+```
+$ python -mtimeit -n1 -r1 'import reentry'
+1 loop, best of 1: 23.8 msec per loop
+$ python -mtimeit  -s 'from reentry.default_manager import PluginManager as p' 'p().get_entry_map()'
+200 loops, best of 5: 1.07 msec per loop
+```
+
+While some speed benefit from reentry remains (~15 ms or ~40%), we no longer consider this high enough to warrant the extra effort required by the user (keeping the entry point cache up to date) and are therefore halting further development of `reentry`.  
+
+
 Features
 --------
 
