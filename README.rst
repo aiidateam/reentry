@@ -14,11 +14,11 @@ Archival notice
 ----------------
 
 Python 3.8 saw the introduction of `importlib.metadata <https://docs.python.org/3/library/importlib.metadata.html>`_ into the Python standard library.
-It is both fast to ``import importlib.metadata`` and fast to scan for entry points using the ``entry_points()`` function, thus making the existence of `reentry` less necessary.
+It is both fast to ``import importlib.metadata`` and fast to scan for entry points using the ``entry_points()`` function.
 
 The separate `importlib-metadata <https://pypi.org/project/importlib-metadata/>`_ package backports this functionality to python >=3.6, and as of version 4.6.3 (or earlier), scanning is even faster than with the standard library.
 
-The following are benchmarks on an MacBook Air M1 (2020) in a python 3.9.1 conda environment with 248 packages installed (~30 of which register entry points).
+Below are timings recorded on a MacBook Air M1 (2020) in a python 3.9.1 conda environment with 248 packages installed (~30 of which register entry points).
 
 ``pkg_resources``: ~147 msec in total::
 
@@ -49,8 +49,9 @@ The following are benchmarks on an MacBook Air M1 (2020) in a python 3.9.1 conda
     $ python -mtimeit  -s 'from reentry.default_manager import PluginManager as p' 'p().get_entry_map()'
     200 loops, best of 5: 1.07 msec per loop
 
-The advent of faster (solid-state) disks, together with the faster importlib implementations have led to a substantial reduction of the speed benefit from using ``reentry`` (down to ~15 ms or ~40% in the benchmark above).
-While there may still be certain edge cases where ``reentry`` is useful, we will stop using going forward and are thus archiving this repository.
+The advent of faster (solid-state) disks, together with the faster importlib implementations have led to a substantial reduction of the speed benefit that ``reentry`` provided (down to ~15 ms or ~40% in the benchmark above).
+While there may still be certain edge cases where ``reentry`` is useful, we will stop using it going forward and are thus archiving this repository.
+
 Users interested in continuing the maintenance of ``reentry`` are encouraged to open an issue on the issue tracker. 
 
 
